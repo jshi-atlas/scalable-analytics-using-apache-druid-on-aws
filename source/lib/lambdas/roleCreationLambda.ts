@@ -271,11 +271,13 @@ async function createRoles(groupRoleMappings: Record<string, string[]>): Promise
             return Promise.all(createRoleTasks);
         }, retryConfig);
     } catch (e) {
-        console.error(
-            `Received an error while creating initial roles, error status: ${
-                axios.isAxiosError(e) ? e.status : ''
-            }`
-        );
+        if (axios.isAxiosError(e)) {
+            console.error(
+                `Received an error while creating initial roles. Status: ${e.status}, Message: ${e.message}, Data: ${e.response ? JSON.stringify(e.response.data) : 'N/A'}, Headers: ${e.response ? JSON.stringify(e.response.headers) : 'N/A'}`,
+            );
+        } else {
+            console.error(e);
+        }
     }
 
     // create role permission
@@ -292,11 +294,13 @@ async function createRoles(groupRoleMappings: Record<string, string[]>): Promise
             return Promise.all(createPermissionTasks);
         }, retryConfig);
     } catch (e) {
-        console.error(
-            `Received an error while creating permissions for initial roles, error status: ${
-                axios.isAxiosError(e) ? e.status : ''
-            }`
-        );
+        if (axios.isAxiosError(e)) {
+            console.error(
+                `Received an error while creating permissions for initial roles. Status: ${e.status}, Message: ${e.message}, Data: ${e.response ? JSON.stringify(e.response.data) : 'N/A'}, Headers: ${e.response ? JSON.stringify(e.response.headers) : 'N/A'}`,
+            );
+        } else {
+            console.error(e);
+        }
     }
 
     // create role group mappings
@@ -319,11 +323,13 @@ async function createRoles(groupRoleMappings: Record<string, string[]>): Promise
             return Promise.all(createGroupRoleMappingTasks);
         }, retryConfig);
     } catch (e) {
-        console.error(
-            `Received an error while setting up group mappings, error status: ${
-                axios.isAxiosError(e) ? e.status : ''
-            }`
-        );
+        if (axios.isAxiosError(e)) {
+            console.error(
+                `Received an error while setting up group mappings. Status: ${e.status}, Message: ${e.message}, Data: ${e.response ? JSON.stringify(e.response.data) : 'N/A'}, Headers: ${e.response ? JSON.stringify(e.response.headers) : 'N/A'}`,
+            );
+        } else {
+            console.error(e);
+        }
     }
 }
 
@@ -372,10 +378,12 @@ async function updateGroupRoleMappings(
             return Promise.all(createGroupRoleMappingTasks);
         }, retryConfig);
     } catch (e) {
-        console.error(
-            `Received an error while updating group role mappings, error status: ${
-                axios.isAxiosError(e) ? e.status : ''
-            }`
-        );
+        if (axios.isAxiosError(e)) {
+            console.error(
+                `Received an error while updating group role mappings. Status: ${e.status}, Message: ${e.message}, Data: ${e.response ? JSON.stringify(e.response.data) : 'N/A'}, Headers: ${e.response ? JSON.stringify(e.response.headers) : 'N/A'}`,
+            );
+        } else {
+            console.error(e);
+        }
     }
 }
