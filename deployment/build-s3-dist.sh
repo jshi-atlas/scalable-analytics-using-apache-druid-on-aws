@@ -111,7 +111,8 @@ cat <<EOF > $source_dir/cdk.context.json
         "druid-cloudwatch",
         "druid-orc-extensions",
         "druid-basic-security",
-        "druid-pac4j"
+        "druid-pac4j",
+        "druid-xbasic"
     ],
     "environmentAgnostic": true,
     "druidEc2Config": {
