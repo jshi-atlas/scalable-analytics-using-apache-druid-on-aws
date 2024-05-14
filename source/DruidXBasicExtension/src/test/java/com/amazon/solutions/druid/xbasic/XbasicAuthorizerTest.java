@@ -13,7 +13,7 @@ import org.apache.druid.server.security.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
-public class XBasicAuthorizerTest {
+public class XbasicAuthorizerTest {
     private XbasicAuthorizer authorizer;
     private Resource resource;
     private Map<String, Object> context;

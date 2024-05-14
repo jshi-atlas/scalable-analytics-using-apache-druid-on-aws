@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 
-public class XBasicFilterTest {
-    private XBasicFilter filter;
+public class XbasicFilterTest {
+    private XbasicFilter filter;
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -43,7 +43,7 @@ public class XBasicFilterTest {
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
 
-        filter = new XBasicFilter();
+        filter = new XbasicFilter();
     }
 
     @Test
