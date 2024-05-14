@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import javax.servlet.Filter;
 import org.junit.Test;
 
-public class XBasicAuthenticatorTest {
+public class XbasicAuthenticatorTest {
     private XbasicAuthenticator authenticator;
     @Test
     public void canInitialiseOidcFilter() {
