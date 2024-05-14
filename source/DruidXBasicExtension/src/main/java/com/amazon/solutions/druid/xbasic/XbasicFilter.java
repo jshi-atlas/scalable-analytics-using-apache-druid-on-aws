@@ -37,10 +37,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class XBasicFilter implements Filter {
-    private static final Logger logger = new Logger(XBasicFilter.class);
+public class XbasicFilter implements Filter {
+    private static final Logger logger = new Logger(XbasicFilter.class);
 
-    public XBasicFilter() {}
+    public XbasicFilter() {}
 
     @Override
     public void init(FilterConfig filterConfig) {

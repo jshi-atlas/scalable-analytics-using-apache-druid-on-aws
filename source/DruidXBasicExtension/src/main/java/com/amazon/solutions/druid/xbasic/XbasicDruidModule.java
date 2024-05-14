@@ -27,25 +27,18 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 
 import org.apache.druid.initialization.DruidModule;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import java.util.List;
 
-public class XBasicDruidModule implements DruidModule {
+public class XbasicDruidModule implements DruidModule {
     @Override
     public List<? extends Module> getJacksonModules() {
         return ImmutableList.of(
-                new SimpleModule("XBasicAuthDruidSecurity").registerSubtypes(
-                        XBasicAuthenticator.class,
-                        XBasicAuthorizer.class));
+                new SimpleModule("XbasicDruidSecurity").registerSubtypes(
+                        XbasicAuthenticator.class,
+                        XbasicAuthorizer.class));
     }
 
     @Override
     public void configure(Binder binder) {}
-
-    @Provides
-    static HttpClient createHttpClient(final Injector injector) {
-        return HttpClients.createDefault();
-    }
 }

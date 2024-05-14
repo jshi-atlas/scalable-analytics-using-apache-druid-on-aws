@@ -178,6 +178,7 @@ const commonStackProps = {
 
 const mustHaveExtensions = [
     'druid-oidc',
+    'druid-xbasic',
     'druid-cloudwatch',
     'druid-basic-security',
     'druid-s3-extensions',

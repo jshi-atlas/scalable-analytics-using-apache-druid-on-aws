@@ -19,55 +19,31 @@
 
 package com.amazon.solutions.druid.xbasic;
 
+import org.apache.druid.java.util.common.logger.Logger;
+import org.apache.druid.server.security.Access;
+import org.apache.druid.server.security.Action;
+import org.apache.druid.server.security.AuthenticationResult;
+import org.apache.druid.server.security.Authorizer;
+import org.apache.druid.server.security.Resource;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.apache.druid.server.security.AuthenticationResult;
-import org.apache.druid.server.security.Authenticator;
 
-import javax.annotation.Nullable;
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import java.util.EnumSet;
-import java.util.Map;
 
 @JsonTypeName("xbasic")
-public class XBasicAuthenticator implements Authenticator {
-    @JsonCreator
-    public XBasicAuthenticator() {}
+public class XbasicAuthorizer implements Authorizer {
+    private static final Logger logger = new Logger(XbasicAuthorizer.class);
 
-    @Override
-    public Filter getFilter() {
-        return new XBasicFilter();
+    public XbasicAuthorizer() {
+        logger.debug("Initialising X-Basic HTTP authorizer");
     }
 
     @Override
-    public String getAuthChallengeHeader() {
-        return null;
+    public Access authorize(AuthenticationResult authenticationResult, Resource resource, Action action) {
+        return allow();
     }
 
-    @Override
-    @Nullable
-    public AuthenticationResult authenticateJDBCContext(Map<String, Object> context) {
-        return null;
-    }
-
-    @Override
-    public Class<? extends Filter> getFilterClass() {
-        return null;
-    }
-
-    @Override
-    public Map<String, String> getInitParameters() {
-        return null;
-    }
-
-    @Override
-    public String getPath() {
-        return "/*";
-    }
-
-    @Override
-    public EnumSet<DispatcherType> getDispatcherType() {
-        return null;
+    private Access allow() {
+        return new Access(true);
     }
 }

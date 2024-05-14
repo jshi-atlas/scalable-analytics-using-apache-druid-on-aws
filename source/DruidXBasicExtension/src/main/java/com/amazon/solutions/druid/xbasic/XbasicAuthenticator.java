@@ -19,32 +19,55 @@
 
 package com.amazon.solutions.druid.xbasic;
 
-import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.server.security.Access;
-import org.apache.druid.server.security.Action;
-import org.apache.druid.server.security.AuthenticationResult;
-import org.apache.druid.server.security.Authorizer;
-import org.apache.druid.server.security.Resource;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.apache.druid.server.security.AuthenticationResult;
+import org.apache.druid.server.security.Authenticator;
 
+import javax.annotation.Nullable;
+import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
+import java.util.EnumSet;
+import java.util.Map;
 
 @JsonTypeName("xbasic")
-public class XBasicAuthorizer implements Authorizer {
-    private static final Logger logger = new Logger(XBasicAuthorizer.class);
+public class XbasicAuthenticator implements Authenticator {
 
-    @JsonCreator
-    public XBasicAuthorizer() {
-        logger.debug("Initialising X-Basic HTTP authorizer");
+    public XbasicAuthenticator() {}
+
+    @Override
+    public Filter getFilter() {
+        return new XbasicFilter();
     }
 
     @Override
-    public Access authorize(AuthenticationResult authenticationResult, Resource resource, Action action) {
-        return allow();
+    public String getAuthChallengeHeader() {
+        return null;
     }
 
-    private Access allow() {
-        return new Access(true);
+    @Override
+    @Nullable
+    public AuthenticationResult authenticateJDBCContext(Map<String, Object> context) {
+        return null;
+    }
+
+    @Override
+    public Class<? extends Filter> getFilterClass() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getInitParameters() {
+        return null;
+    }
+
+    @Override
+    public String getPath() {
+        return "/*";
+    }
+
+    @Override
+    public EnumSet<DispatcherType> getDispatcherType() {
+        return null;
     }
 }
