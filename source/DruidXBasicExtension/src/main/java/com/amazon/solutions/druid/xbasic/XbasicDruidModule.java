@@ -26,6 +26,7 @@ import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 
+import org.apache.druid.guice.JsonConfigProvider;
 import org.apache.druid.initialization.DruidModule;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -36,13 +37,15 @@ public class XbasicDruidModule implements DruidModule {
     @Override
     public List<? extends Module> getJacksonModules() {
         return ImmutableList.of(
-                new SimpleModule("XbasicAuthDruidSecurity").registerSubtypes(
+                new SimpleModule("XbasicDruidSecurity").registerSubtypes(
                         XbasicAuthenticator.class,
                         XbasicAuthorizer.class));
     }
 
     @Override
-    public void configure(Binder binder) {}
+    public void configure(Binder binder) {
+        JsonConfigProvider.bind(binder, "druid.auth.xbasic", com.amazon.solutions.druid.xbasic.XbasicConfig.class);
+    }
 
     @Provides
     static HttpClient createHttpClient(final Injector injector) {
