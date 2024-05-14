@@ -6,10 +6,10 @@ import javax.servlet.Filter;
 import org.junit.Test;
 
 public class XBasicAuthenticatorTest {
-    private XBasicAuthenticator authenticator;
+    private XbasicAuthenticator authenticator;
     @Test
     public void canInitialiseOidcFilter() {
-        authenticator = new XBasicAuthenticator();
+        authenticator = new XbasicAuthenticator();
         Filter oidcFilter = authenticator.getFilter();
 
         assertNotNull(oidcFilter);

@@ -191,7 +191,7 @@
                 <version>0.8.10</version>
                 <configuration>
                     <excludes>
-                        <exclude>com/amazon/solutions/druid/xbasic/XBasicDruidModule.class</exclude>
+                        <exclude>com/amazon/solutions/druid/xbasic/XbasicDruidModule.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

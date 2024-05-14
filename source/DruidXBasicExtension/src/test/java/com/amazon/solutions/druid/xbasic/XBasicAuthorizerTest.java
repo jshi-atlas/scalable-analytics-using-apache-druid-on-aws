@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class XBasicAuthorizerTest {
-    private XBasicAuthorizer authorizer;
+    private XbasicAuthorizer authorizer;
     private Resource resource;
     private Map<String, Object> context;
     private AuthenticationResult result;
@@ -27,7 +27,7 @@ public class XBasicAuthorizerTest {
         when(result.getContext()).thenReturn(context);
         resource = new Resource("resourceName", "resourceType");
 
-        authorizer = new XBasicAuthorizer();
+        authorizer = new XbasicAuthorizer();
     }
 
     @Test

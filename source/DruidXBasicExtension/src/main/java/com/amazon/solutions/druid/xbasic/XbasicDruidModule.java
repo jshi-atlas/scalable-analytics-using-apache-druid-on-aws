@@ -32,13 +32,13 @@ import org.apache.http.impl.client.HttpClients;
 
 import java.util.List;
 
-public class XBasicDruidModule implements DruidModule {
+public class XbasicDruidModule implements DruidModule {
     @Override
     public List<? extends Module> getJacksonModules() {
         return ImmutableList.of(
-                new SimpleModule("XBasicAuthDruidSecurity").registerSubtypes(
-                        XBasicAuthenticator.class,
-                        XBasicAuthorizer.class));
+                new SimpleModule("XbasicAuthDruidSecurity").registerSubtypes(
+                        XbasicAuthenticator.class,
+                        XbasicAuthorizer.class));
     }
 
     @Override

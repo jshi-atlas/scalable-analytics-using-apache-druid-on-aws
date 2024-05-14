@@ -31,11 +31,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("xbasic")
-public class XBasicAuthorizer implements Authorizer {
-    private static final Logger logger = new Logger(XBasicAuthorizer.class);
+public class XbasicAuthorizer implements Authorizer {
+    private static final Logger logger = new Logger(XbasicAuthorizer.class);
 
     @JsonCreator
-    public XBasicAuthorizer() {
+    public XbasicAuthorizer() {
         logger.debug("Initialising X-Basic HTTP authorizer");
     }
 

@@ -31,13 +31,13 @@ import java.util.EnumSet;
 import java.util.Map;
 
 @JsonTypeName("xbasic")
-public class XBasicAuthenticator implements Authenticator {
+public class XbasicAuthenticator implements Authenticator {
     @JsonCreator
-    public XBasicAuthenticator() {}
+    public XbasicAuthenticator() {}
 
     @Override
     public Filter getFilter() {
-        return new XBasicFilter();
+        return new XbasicFilter();
     }
 
     @Override
