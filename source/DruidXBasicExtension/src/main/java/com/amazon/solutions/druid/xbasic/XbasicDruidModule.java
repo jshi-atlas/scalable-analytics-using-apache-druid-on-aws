@@ -20,11 +20,10 @@
 package com.amazon.solutions.druid.xbasic;
 
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Binder;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
 
 import org.apache.druid.initialization.DruidModule;
 
@@ -33,10 +32,13 @@ import java.util.List;
 public class XbasicDruidModule implements DruidModule {
     @Override
     public List<? extends Module> getJacksonModules() {
+        String type = "xbasic";
         return ImmutableList.of(
-                new SimpleModule("XbasicDruidSecurity").registerSubtypes(
-                        XbasicAuthenticator.class,
-                        XbasicAuthorizer.class));
+                new SimpleModule(getClass().getSimpleName()).registerSubtypes(
+                        new NamedType(XbasicAuthenticator.class, type),
+                        new NamedType(XbasicAuthorizer.class, type)
+                )
+        );
     }
 
     @Override
