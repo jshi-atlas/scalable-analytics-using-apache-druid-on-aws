@@ -34,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class XbasicAuthorizer implements Authorizer {
     private static final Logger logger = new Logger(XbasicAuthorizer.class);
 
-    @JsonCreator
     public XbasicAuthorizer() {
         logger.debug("Initialising X-Basic HTTP authorizer");
     }

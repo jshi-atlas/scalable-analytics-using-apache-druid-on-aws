@@ -32,7 +32,7 @@ import java.util.Map;
 
 @JsonTypeName("xbasic")
 public class XbasicAuthenticator implements Authenticator {
-    @JsonCreator
+
     public XbasicAuthenticator() {}
 
     @Override
