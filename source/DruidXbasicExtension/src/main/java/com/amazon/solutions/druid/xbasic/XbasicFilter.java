@@ -25,15 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequestWrapper;
-import org.apache.druid.java.util.common.logger.Logger;
-import org.pac4j.core.config.Config;
-import org.pac4j.core.context.J2EContext;
-import org.pac4j.core.engine.CallbackLogic;
-import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.core.engine.DefaultSecurityLogic;
-import org.pac4j.core.engine.SecurityLogic;
-import org.pac4j.core.http.adapter.HttpActionAdapter;
-import org.pac4j.core.profile.CommonProfile;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -46,35 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class XbasicFilter implements Filter {
-    private static final Logger logger = new Logger(XbasicFilter.class);
-
-    private final Config pac4jConfig;
-    private final OidcConfig xbasicConfig;
-    private final SecurityLogic<CommonProfile, J2EContext> securityLogic;
-    private final CallbackLogic<CommonProfile, J2EContext> callbackLogic;
-    private static final HttpActionAdapter<CommonProfile, J2EContext> NOOP_HTTP_ACTION_ADAPTER = (int code,
-            J2EContext ctx) -> null;
-
-    private final String name;
-    private final String authorizerName;
-
-    public XbasicFilter(String name, String authorizerName, Config pac4jConfig, OidcConfig xbasicConfig) {
-        this(name, authorizerName, pac4jConfig, xbasicConfig, new DefaultSecurityLogic<>(),
-                new DefaultCallbackLogic<>());
-    }
-
-    public XbasicFilter(String name, String authorizerName, Config pac4jConfig, OidcConfig xbasicConfig,
-                        SecurityLogic<CommonProfile, J2EContext> securityLogic,
-                        CallbackLogic<CommonProfile, J2EContext> callbackLogic) {
-        this.pac4jConfig = pac4jConfig;
-        this.xbasicConfig = xbasicConfig;
-        this.securityLogic = securityLogic;
-        this.callbackLogic = callbackLogic;
-
-        this.name = name;
-        this.authorizerName = authorizerName;
-
-    }
+    public XbasicFilter() {}
 
     @Override
     public void init(FilterConfig filterConfig) {

@@ -29,12 +29,6 @@
     <version>25.0.0</version>
 
     <properties>
-        <pac4j.version>3.8.3</pac4j.version>
-
-        <!-- Following must be updated along with any updates to pac4j version -->
-        <nimbus.lang.tag.version>1.7</nimbus.lang.tag.version>
-        <nimbus.jose.jwt.version>7.9</nimbus.jose.jwt.version>
-        <oauth2.oidc.sdk.version>6.5</oauth2.oidc.sdk.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <jdk.version>1.8</jdk.version>
@@ -58,27 +52,6 @@
             <artifactId>druid-processing</artifactId>
             <version>25.0.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-oidc</artifactId>
-            <version>${pac4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>lang-tag</artifactId>
-            <version>${nimbus.lang.tag.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>${nimbus.jose.jwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>oauth2-oidc-sdk</artifactId>
-            <version>${oauth2.oidc.sdk.version}</version>
         </dependency>
 
         <dependency>
@@ -118,11 +91,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-core</artifactId>
-            <version>${pac4j.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
             <scope>provided</scope>
@@ -145,6 +113,12 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
             <version>4.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
