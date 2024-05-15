@@ -19,9 +19,7 @@
 
 package com.amazon.solutions.druid.xbasic;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.apache.druid.server.security.AuthenticationResult;
 import org.apache.druid.server.security.Authenticator;
@@ -34,21 +32,9 @@ import java.util.Map;
 
 @JsonTypeName("xbasic")
 public class XbasicAuthenticator implements Authenticator {
-    private final String name;
-    private final String authorizerName;
-
-    private final XbasicConfig xbasicConfig;
 
     @JsonCreator
-    public XbasicAuthenticator(
-        @JsonProperty("name") String name,
-        @JsonProperty("authorizerName") String authorizerName,
-        @JacksonInject XbasicConfig xbasicConfig
-    ) {
-        this.name = name;
-        this.authorizerName = authorizerName;
-        this.xbasicConfig = xbasicConfig;
-    }
+    public XbasicAuthenticator() {}
 
     @Override
     public Filter getFilter() {
