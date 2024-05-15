@@ -36,7 +36,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import org.apache.druid.java.util.common.logger.Logger;
+
 public class XbasicFilter implements Filter {
+    private static final Logger logger = new Logger(XbasicFilter.class);
+
     public XbasicFilter() {}
 
     @Override
@@ -54,6 +58,7 @@ public class XbasicFilter implements Filter {
         HeaderMapRequestWrapper requestWrapper = new HeaderMapRequestWrapper(httpServletRequest);
 
         if (xBasicHeader != null) {
+            logger.info("Authorization header replaced by x-auth");
             requestWrapper.setHeader("Authorization", xBasicHeader);
         }
 
