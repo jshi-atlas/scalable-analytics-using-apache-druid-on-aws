@@ -24,19 +24,26 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Binder;
 
+import org.apache.druid.guice.JsonConfigProvider;
 import org.apache.druid.initialization.DruidModule;
+import org.apache.druid.java.util.common.logger.Logger;
 
 import java.util.List;
 
 public class XbasicDruidModule implements DruidModule {
+    private static final Logger logger = new Logger(XbasicDruidModule.class);
+
     @Override
     public List<? extends Module> getJacksonModules() {
+        logger.info("Initialising XbasicDruidSecurity JacksonModules");
         return ImmutableList.of(
-                new SimpleModule(getClass().getSimpleName()).registerSubtypes(
+                new SimpleModule("XbasicDruidSecurity").registerSubtypes(
                         XbasicAuthenticator.class,
                         XbasicAuthorizer.class));
     }
 
     @Override
-    public void configure(Binder binder) {}
+    public void configure(Binder binder) {
+        JsonConfigProvider.bind(binder, "druid.auth.xbasic", XbasicConfig.class);
+    }
 }
