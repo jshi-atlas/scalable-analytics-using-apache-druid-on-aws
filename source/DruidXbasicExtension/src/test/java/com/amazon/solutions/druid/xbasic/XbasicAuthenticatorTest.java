@@ -32,8 +32,8 @@ public class XbasicAuthenticatorTest {
     @Test
     public void canInitialiseXbasicFilter() {
         authenticator = new XbasicAuthenticator();
-        Filter oidcFilter = authenticator.getFilter();
+        Filter filter = authenticator.getFilter();
 
-        assertNotNull(oidcFilter);
+        assertNotNull(filter);
     }
 }
