@@ -23,24 +23,37 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Binder;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
 
+import org.apache.druid.guice.Jerseys;
+import org.apache.druid.guice.JsonConfigProvider;
 import org.apache.druid.initialization.DruidModule;
-import org.apache.druid.java.util.common.logger.Logger;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import java.util.List;
 
 public class XbasicDruidModule implements DruidModule {
-    private static final Logger logger = new Logger(XbasicDruidModule.class);
-
     @Override
     public List<? extends Module> getJacksonModules() {
-        logger.info("Initialising XbasicDruidSecurity JacksonModules");
         return ImmutableList.of(
                 new SimpleModule("XbasicDruidSecurity").registerSubtypes(
                         XbasicAuthenticator.class,
-                        XbasicAuthorizer.class));
+                        XbasicAuthorizer.class,
+                        BasicAuthenticationRoleProvider.class));
     }
 
     @Override
-    public void configure(Binder binder) {}
+    public void configure(Binder binder) {
+        JsonConfigProvider.bind(binder, "druid.auth.xbasic", OidcConfig.class);
+
+        Jerseys.addResource(binder, XbasicCallbackResource.class);
+        binder.bind(RoleProvider.class).to(BasicAuthenticationRoleProvider.class);
+    }
+
+    @Provides
+    static HttpClient createHttpClient(final Injector injector) {
+        return HttpClients.createDefault();
+    }
 }

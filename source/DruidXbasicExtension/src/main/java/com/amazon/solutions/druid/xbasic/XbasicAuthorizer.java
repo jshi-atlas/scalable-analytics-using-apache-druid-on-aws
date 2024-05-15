@@ -19,7 +19,6 @@
 
 package com.amazon.solutions.druid.xbasic;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.server.security.Access;
 import org.apache.druid.server.security.Action;
@@ -27,17 +26,21 @@ import org.apache.druid.server.security.AuthenticationResult;
 import org.apache.druid.server.security.Authorizer;
 import org.apache.druid.server.security.Resource;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
 
 @JsonTypeName("xbasic")
 public class XbasicAuthorizer implements Authorizer {
     private static final Logger logger = new Logger(XbasicAuthorizer.class);
+    private OidcConfig xbasicConfig;
+    private RoleProvider roleProvider;
 
     @JsonCreator
-    public XbasicAuthorizer() {
-        logger.debug("Initialising X-Basic HTTP authorizer");
+    public XbasicAuthorizer(@JacksonInject OidcConfig xbasicConfig, @JacksonInject RoleProvider roleProvider) {
+        logger.debug("Initialising xbasic authorizer");
+        this.xbasicConfig = xbasicConfig;
+        this.roleProvider = roleProvider;
     }
 
     @Override
