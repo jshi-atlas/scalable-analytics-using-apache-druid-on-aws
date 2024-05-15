@@ -18,17 +18,15 @@ public class XbasicAuthorizerTest {
     private Resource resource;
     private Map<String, Object> context;
     private AuthenticationResult result;
-    private XbasicConfig xbasicConfig;
 
     @Before
     public void setUp() {
         result = mock(AuthenticationResult.class);
-        xbasicConfig = mock(XbasicConfig.class);
         context = new HashMap<>();
         when(result.getContext()).thenReturn(context);
         resource = new Resource("resourceName", "resourceType");
 
-        authorizer = new XbasicAuthorizer(xbasicConfig);
+        authorizer = new XbasicAuthorizer();
     }
 
     @Test

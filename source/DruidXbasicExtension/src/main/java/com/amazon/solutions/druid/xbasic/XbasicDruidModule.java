@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Binder;
 
-import org.apache.druid.guice.JsonConfigProvider;
 import org.apache.druid.initialization.DruidModule;
 import org.apache.druid.java.util.common.logger.Logger;
 
@@ -43,7 +42,5 @@ public class XbasicDruidModule implements DruidModule {
     }
 
     @Override
-    public void configure(Binder binder) {
-        JsonConfigProvider.bind(binder, "druid.auth.xbasic", XbasicConfig.class);
-    }
+    public void configure(Binder binder) {}
 }
