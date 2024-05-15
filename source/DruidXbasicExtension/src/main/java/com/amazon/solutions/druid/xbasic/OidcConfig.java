@@ -28,7 +28,7 @@ import org.joda.time.Duration;
 
 import java.util.List;
 
-public class XbasicConfig {
+public class OidcConfig {
     @JsonProperty
     private final String clientID;
 
@@ -63,7 +63,7 @@ public class XbasicConfig {
     private final PasswordProvider druidPassword;
 
     @JsonCreator
-    public XbasicConfig(
+    public OidcConfig(
             @JsonProperty("clientID") String clientID,
             @JsonProperty("clientSecret") PasswordProvider clientSecret,
             @JsonProperty("discoveryURI") String discoveryURI,

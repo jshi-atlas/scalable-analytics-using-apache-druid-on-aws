@@ -46,9 +46,9 @@ public class XbasicConfigTest {
                 + "}\n";
 
         // act
-        XbasicConfig config = mapper.readValue(
-                mapper.writeValueAsString(mapper.readValue(jsonString, XbasicConfig.class)),
-                XbasicConfig.class);
+        OidcConfig config = mapper.readValue(
+                mapper.writeValueAsString(mapper.readValue(jsonString, OidcConfig.class)),
+                OidcConfig.class);
 
         // assert
         Assert.assertEquals("testid", config.getClientID());

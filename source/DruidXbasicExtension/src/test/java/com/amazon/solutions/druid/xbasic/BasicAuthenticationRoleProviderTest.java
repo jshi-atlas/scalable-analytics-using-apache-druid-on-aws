@@ -38,7 +38,7 @@ import okhttp3.mockwebserver.MockWebServer;
 
 public class BasicAuthenticationRoleProviderTest {
     private MockWebServer server;
-    private XbasicConfig xbasicConfig;
+    private OidcConfig xbasicConfig;
     private BasicAuthenticationRoleProvider roleProvider;
     private ArrayList<String> inputGroups = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class BasicAuthenticationRoleProviderTest {
     public void setUp() throws ClientProtocolException, IOException {
         server = new MockWebServer();
         HttpClient httpClient = HttpClients.createDefault();
-        xbasicConfig = mock(XbasicConfig.class);
+        xbasicConfig = mock(OidcConfig.class);
 
         inputGroups.add("my-group");
         roleProvider = new BasicAuthenticationRoleProvider(httpClient, xbasicConfig);

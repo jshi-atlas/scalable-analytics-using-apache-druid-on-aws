@@ -33,16 +33,14 @@ import org.junit.Test;
 
 import com.google.inject.Provider;
 
-import java.util.Arrays;
-
 public class XbasicAuthenticatorTest {
-    private XbasicConfig config;
+    private OidcConfig config;
     private Provider<SSLContext> provider;
     private XbasicAuthenticator authenticator;
 
     @Before
     public void setup() {
-        config = mock(XbasicConfig.class);
+        config = mock(OidcConfig.class);
         provider = mock(Provider.class);
         PasswordProvider passwordProvider = mock(PasswordProvider.class);
 

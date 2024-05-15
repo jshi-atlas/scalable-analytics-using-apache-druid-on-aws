@@ -38,11 +38,11 @@ public class BasicAuthenticationRoleProvider implements RoleProvider {
 
     private HttpClient httpClient;
     private ObjectMapper mapper;
-    private XbasicConfig config;
+    private OidcConfig config;
     private static final Logger logger = new Logger(BasicAuthenticationRoleProvider.class);
 
     @Inject
-    public BasicAuthenticationRoleProvider(@JacksonInject HttpClient httpClient, @JacksonInject XbasicConfig config) {
+    public BasicAuthenticationRoleProvider(@JacksonInject HttpClient httpClient, @JacksonInject OidcConfig config) {
         this.httpClient = httpClient;
         this.config = config;
         this.mapper = new ObjectMapper();

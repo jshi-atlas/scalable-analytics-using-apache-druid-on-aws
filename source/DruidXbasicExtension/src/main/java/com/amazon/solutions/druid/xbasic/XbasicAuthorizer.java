@@ -33,11 +33,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("xbasic")
 public class XbasicAuthorizer implements Authorizer {
     private static final Logger logger = new Logger(XbasicAuthorizer.class);
-    private XbasicConfig xbasicConfig;
+    private OidcConfig xbasicConfig;
     private RoleProvider roleProvider;
 
     @JsonCreator
-    public XbasicAuthorizer(@JacksonInject XbasicConfig xbasicConfig, @JacksonInject RoleProvider roleProvider) {
+    public XbasicAuthorizer(@JacksonInject OidcConfig xbasicConfig, @JacksonInject RoleProvider roleProvider) {
         logger.debug("Initialising xbasic authorizer");
         this.xbasicConfig = xbasicConfig;
         this.roleProvider = roleProvider;

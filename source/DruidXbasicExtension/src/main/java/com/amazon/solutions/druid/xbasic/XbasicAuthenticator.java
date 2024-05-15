@@ -54,13 +54,13 @@ public class XbasicAuthenticator implements Authenticator {
     private final String authorizerName;
     private final Supplier<Config> pac4jConfigSupplier;
     private final SSLSocketFactory sslSocketFactory;
-    private final XbasicConfig xbasicConfig;
+    private final OidcConfig xbasicConfig;
 
     @JsonCreator
     public XbasicAuthenticator(
             @JsonProperty("name") String name,
             @JsonProperty("authorizerName") String authorizerName,
-            @JacksonInject XbasicConfig xbasicConfig,
+            @JacksonInject OidcConfig xbasicConfig,
             @JacksonInject Provider<SSLContext> sslContextSupplier) {
         this.name = name;
         this.authorizerName = authorizerName;
@@ -114,7 +114,7 @@ public class XbasicAuthenticator implements Authenticator {
         return null;
     }
 
-    private Config createPac4jConfig(XbasicConfig xbasicConfig) {
+    private Config createPac4jConfig(OidcConfig xbasicConfig) {
         OidcConfiguration oidcConf = new OidcConfiguration();
         oidcConf.setClientId(xbasicConfig.getClientID());
         oidcConf.setSecret(xbasicConfig.getClientSecret().getPassword());

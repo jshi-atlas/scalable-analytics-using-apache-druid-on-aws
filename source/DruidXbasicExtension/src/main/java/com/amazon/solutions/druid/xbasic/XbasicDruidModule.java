@@ -46,7 +46,7 @@ public class XbasicDruidModule implements DruidModule {
 
     @Override
     public void configure(Binder binder) {
-        JsonConfigProvider.bind(binder, "druid.auth.xbasic", XbasicConfig.class);
+        JsonConfigProvider.bind(binder, "druid.auth.xbasic", OidcConfig.class);
 
         Jerseys.addResource(binder, XbasicCallbackResource.class);
         binder.bind(RoleProvider.class).to(BasicAuthenticationRoleProvider.class);

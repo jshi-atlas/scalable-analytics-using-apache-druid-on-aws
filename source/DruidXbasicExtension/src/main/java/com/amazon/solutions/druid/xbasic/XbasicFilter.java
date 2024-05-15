@@ -49,7 +49,7 @@ public class XbasicFilter implements Filter {
     private static final Logger logger = new Logger(XbasicFilter.class);
 
     private final Config pac4jConfig;
-    private final XbasicConfig xbasicConfig;
+    private final OidcConfig xbasicConfig;
     private final SecurityLogic<CommonProfile, J2EContext> securityLogic;
     private final CallbackLogic<CommonProfile, J2EContext> callbackLogic;
     private static final HttpActionAdapter<CommonProfile, J2EContext> NOOP_HTTP_ACTION_ADAPTER = (int code,
@@ -58,12 +58,12 @@ public class XbasicFilter implements Filter {
     private final String name;
     private final String authorizerName;
 
-    public XbasicFilter(String name, String authorizerName, Config pac4jConfig, XbasicConfig xbasicConfig) {
+    public XbasicFilter(String name, String authorizerName, Config pac4jConfig, OidcConfig xbasicConfig) {
         this(name, authorizerName, pac4jConfig, xbasicConfig, new DefaultSecurityLogic<>(),
                 new DefaultCallbackLogic<>());
     }
 
-    public XbasicFilter(String name, String authorizerName, Config pac4jConfig, XbasicConfig xbasicConfig,
+    public XbasicFilter(String name, String authorizerName, Config pac4jConfig, OidcConfig xbasicConfig,
                         SecurityLogic<CommonProfile, J2EContext> securityLogic,
                         CallbackLogic<CommonProfile, J2EContext> callbackLogic) {
         this.pac4jConfig = pac4jConfig;

@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class XbasicAuthorizerTest {
-    private XbasicConfig xbasicConfig;
+    private OidcConfig xbasicConfig;
     private XbasicAuthorizer authorizer;
     private Resource resource;
     private Map<String, Object> context;
@@ -45,7 +45,7 @@ public class XbasicAuthorizerTest {
 
     @Before
     public void setUp() {
-        xbasicConfig = mock(XbasicConfig.class);
+        xbasicConfig = mock(OidcConfig.class);
         result = mock(AuthenticationResult.class);
         roleProvider = mock(RoleProvider.class);
 
