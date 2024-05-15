@@ -26,21 +26,16 @@ import org.apache.druid.server.security.AuthenticationResult;
 import org.apache.druid.server.security.Authorizer;
 import org.apache.druid.server.security.Resource;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("xbasic")
 public class XbasicAuthorizer implements Authorizer {
     private static final Logger logger = new Logger(XbasicAuthorizer.class);
-    private OidcConfig xbasicConfig;
-    private RoleProvider roleProvider;
 
     @JsonCreator
-    public XbasicAuthorizer(@JacksonInject OidcConfig xbasicConfig, @JacksonInject RoleProvider roleProvider) {
+    public XbasicAuthorizer() {
         logger.debug("Initialising xbasic authorizer");
-        this.xbasicConfig = xbasicConfig;
-        this.roleProvider = roleProvider;
     }
 
     @Override

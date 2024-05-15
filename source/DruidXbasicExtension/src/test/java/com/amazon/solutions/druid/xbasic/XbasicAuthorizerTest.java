@@ -19,9 +19,7 @@
  */
 package com.amazon.solutions.druid.xbasic;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,31 +34,25 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class XbasicAuthorizerTest {
-    private OidcConfig xbasicConfig;
     private XbasicAuthorizer authorizer;
     private Resource resource;
     private Map<String, Object> context;
     private AuthenticationResult result;
-    private RoleProvider roleProvider;
 
     @Before
     public void setUp() {
-        xbasicConfig = mock(OidcConfig.class);
-        result = mock(AuthenticationResult.class);
-        roleProvider = mock(RoleProvider.class);
-
         context = new HashMap<>();
+        result = mock(AuthenticationResult.class);
         when(result.getContext()).thenReturn(context);
-        when(xbasicConfig.getGroupClaimName()).thenReturn("groups");
         resource = new Resource("resourceName", "resourceType");
 
-        authorizer = new XbasicAuthorizer(xbasicConfig, roleProvider);
+        authorizer = new XbasicAuthorizer();
     }
 
     @Test
     public void allow_all_requests() {
         // act
-        Access access = authorizer.authorize(null, resource, Action.READ);
+        Access access = authorizer.authorize(result, resource, Action.READ);
 
         // assert
         assertTrue(access.isAllowed());
