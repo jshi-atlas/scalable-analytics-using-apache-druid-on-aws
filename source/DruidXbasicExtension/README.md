@@ -8,11 +8,17 @@ filter in the authentication chain.
 - Create directory inside druid extensions path named `druid-xbasic`
 - Copy the jar in 'druid-xbasic' directory
 - Add `"druid-xbasic"` in extensions list
-- add the following properties to `druidCommonRuntimeConfig`:
+- Add the following properties to `druidCommonRuntimeConfig`:
 `{
     "druid.auth.authenticator.xbasic.type": "xbasic",
     "druid.auth.authenticator.xbasic.authorizerName": "xbasic",
     "druid.auth.authorizer.xbasic.type": "xbasic"
 }`
+- Update the `authenicatorChain` in `druidCommonRuntimeConfig` to have `xbasic` before `basic` auth:
+`{
+  "druid.auth.authenticatorChain": ["xbasic", "basic"]
+}`
+- When making a request to druid, set the header `x-auth` to your basic auth token. The extension will replace the 
+`Authorization` header with the value from `x-auth`
 
 
