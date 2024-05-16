@@ -19,6 +19,7 @@
 
 package com.amazon.solutions.druid.xbasic;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.apache.druid.java.util.common.logger.Logger;
 
 public class XbasicFilter implements Filter {
     private static final Logger logger = new Logger(XbasicFilter.class);
+    private HeaderMapRequestWrapper requestWrapper;
 
     public XbasicFilter() {}
 
@@ -55,7 +57,7 @@ public class XbasicFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         String xBasicHeader = httpServletRequest.getHeader("x-auth");
 
-        HeaderMapRequestWrapper requestWrapper = new HeaderMapRequestWrapper(httpServletRequest);
+       requestWrapper = new HeaderMapRequestWrapper(httpServletRequest);
 
         if (xBasicHeader != null) {
             logger.info("Authorization header replaced by x-auth");
@@ -68,6 +70,11 @@ public class XbasicFilter implements Filter {
     @Override
     public void destroy() {
         // do nothing
+    }
+
+    @VisibleForTesting
+    public HeaderMapRequestWrapper getRequestWrapper() {
+        return this.requestWrapper;
     }
 
     class HeaderMapRequestWrapper extends HttpServletRequestWrapper {
