@@ -51,16 +51,6 @@ build_druid_oidc()
        cp -f target/druid-oidc-25.0.0-jar-with-dependencies.jar ../lib/docker/extensions/druid-oidc/ && cd ..
 }
 
-build_druid_xbasic()
-{
-    echo "building druid xbasic extension"
-    cd DruidXbasicExtension && \
-       mvn clean verify package && \
-       rm -rf ../lib/docker/extensions/druid-xbasic/ && \
-       mkdir -p ../lib/docker/extensions/druid-xbasic/ && \
-       cp -f target/druid-xbasic-25.0.0-jar-with-dependencies.jar ../lib/docker/extensions/druid-xbasic/ && cd ..
-}
-
 download_druid_operator()
 {
     echo "downloading druid operator repository from GitHub"
@@ -222,6 +212,3 @@ do_cmd download_rds_ca_bundle
 do_cmd build_druid_cloudwatch
 
 do_cmd build_druid_oidc
-
-do_cmd build_druid_xbasic
-
