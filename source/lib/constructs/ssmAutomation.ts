@@ -166,7 +166,7 @@ export class SSMAutomation extends Construct {
                                     `export AWS_DEFAULT_REGION=${cdk.Aws.REGION}`,
                                     `sudo -u druid-cluster -E aws s3 cp s3://${installationBucket.bucketName}/scripts/druid/terminate_druid_node.sh /home/druid-cluster/apache-druid/scripts/druid/`,
                                     // The root priviledge is needed to terminate historial process using supervisorctl
-                                    `sudo -u root -E bash /home/druid-cluster/apache-druid/scripts/druid/terminate_druid_node.sh ${nodeType} ${secretArn} ${gracefulTerminationParamName} | tee /home/druid-cluster/apache-druid/log/ssm_automation.log`,
+                                    `sudo -u root -E bash /home/druid-cluster/apache-druid/scripts/druid/terminate_druid_node.sh ${nodeType} ${secretArn} ${gracefulTerminationParamName} '{{ASGName}}' '{{InstanceId}}' | tee /home/druid-cluster/apache-druid/log/ssm_automation.log`,
                                 ],
                                 executionTimeout: `${INSTANCE_TERMINATION_TIMEOUT}`,
                             },

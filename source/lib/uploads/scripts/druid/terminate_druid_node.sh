@@ -20,6 +20,8 @@
 NODE_TYPE=$1
 SECRET_ID=$2
 GRACEFUL_TERMINATION_PARAM_NAME=$3
+ASG_NAME=$4
+INSTANCE_ID=$5
 
 if [ -z "$NODE_TYPE" ]; then
     echo "Node type not provided. Please provide the node type."
@@ -35,6 +37,18 @@ if [ -z "$GRACEFUL_TERMINATION_PARAM_NAME" ]; then
     echo "The graceful termination parameter name not provided. Please provide the parameter name."
     exit 1
 fi
+
+if [ -z "$ASG_NAME" ]; then
+    echo "The asg name not provided. Please provide the asg name."
+    exit 1
+fi
+echo "ASG_NAME: $ASG_NAME" # TODO remove this log
+
+if [ -z "$INSTANCE_ID" ]; then
+    echo "The instance id not provided. Please provide the instance id."
+    exit 1
+fi
+echo "INSTANCE_ID: $INSTANCE_ID" # TODO remove this log
 
 SECRET_VALUE=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --query 'SecretString' --output text 2>/dev/null)
 
@@ -137,6 +151,29 @@ disableMiddleManager() {
     done
 }
 
+delayNodeTermination() {
+    INSTANCE_IDS=$(aws autoscaling describe-auto-scaling-groups \
+        --auto-scaling-group-names "$ASG_NAME" \
+        --region us-east-1 \
+        --query 'AutoScalingGroups[].Instances[].InstanceId' \
+        --output text)
+
+    separator=' ' read -r -a INSTANCE_ID_ARRAY <<< "$INSTANCE_IDS"
+
+    INDEX=1
+    for ID in "${INSTANCE_ID_ARRAY[@]}"; do
+        if [[ "$ID" == "$INSTANCE_ID" ]]; then
+            break
+        fi
+        INDEX=$((INDEX+1))
+    done
+
+    DELAY_IN_SECONDS=$((INDEX * 2 * 60))
+
+    echo "Delaying termination of $INSTANCE_ID for $DELAY_IN_SECONDS seconds due to its position in the ASG."
+    sleep $DELAY_IN_SECONDS
+}
+
 case $NODE_TYPE in
     master)
         waitForProcess coordinator
@@ -146,6 +183,7 @@ case $NODE_TYPE in
         disableMiddleManager
         waitForProcess historical
         waitForNoIngestionTasks
+        delayNodeTermination
         ;;
     query)
         waitForProcess broker
@@ -153,6 +191,7 @@ case $NODE_TYPE in
         ;;
     historical)
         waitForProcess historical
+        delayNodeTermination
         ;;
     middleManager)
         disableMiddleManager
