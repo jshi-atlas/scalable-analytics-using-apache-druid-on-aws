@@ -27,6 +27,7 @@ if [ -z "$NODE_TYPE" ]; then
     echo "Node type not provided. Please provide the node type."
     exit 1
 fi
+echo "NODE_TYPE: $NODE_TYPE" # TODO remove this log
 
 if [ -z "$SECRET_ID" ]; then
     echo "Secret ID not provided. Please provide the secret ID"
