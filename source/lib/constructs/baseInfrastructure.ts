@@ -335,6 +335,7 @@ export class BaseInfrastructure extends Construct {
                 destinationBucket: installationBucket,
                 destinationKeyPrefix: SCRIPTS_FOLDER,
                 vpc: vpc,
+                metadata: { "version": uuidv4() },
             });
 
             // prettier-ignore
@@ -344,6 +345,7 @@ export class BaseInfrastructure extends Construct {
                 destinationKeyPrefix: EXTENSIONS_FOLDER,
                 exclude: ['.gitkeep'],
                 vpc: vpc,
+                metadata: { "version": uuidv4() },
             });
 
             // prettier-ignore
@@ -353,6 +355,7 @@ export class BaseInfrastructure extends Construct {
                 destinationKeyPrefix: CONFIG_FOLDER,
                 exclude: ['*_version.txt'],
                 vpc: vpc,
+                metadata: { "version": uuidv4() },
             });
 
             // prettier-ignore
@@ -361,6 +364,7 @@ export class BaseInfrastructure extends Construct {
                 destinationBucket: installationBucket,
                 destinationKeyPrefix: 'ca-certs',
                 vpc: vpc,
+                metadata: { "version": uuidv4() },
             });
 
             druidImageDeployment = new BucketDeployment(
@@ -373,6 +377,7 @@ export class BaseInfrastructure extends Construct {
                     memoryLimit: 4096,
                     useEfs: true,
                     vpc: vpc,
+                    metadata: { "version": uuidv4() },
                 }
             );
 
@@ -384,6 +389,7 @@ export class BaseInfrastructure extends Construct {
                     destinationBucket: installationBucket,
                     destinationKeyPrefix: ZOOKEEPER_IMAGE_FOLDER,
                     vpc: vpc,
+                    metadata: { "version": uuidv4() },
                 }
             );
         }
