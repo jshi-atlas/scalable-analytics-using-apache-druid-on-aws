@@ -2,33 +2,29 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
-import * as cdk from "aws-cdk-lib";
-import * as ec2 from "aws-cdk-lib/aws-ec2";
-import * as kms from "aws-cdk-lib/aws-kms";
-import * as s3 from "aws-cdk-lib/aws-s3";
-import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
-import * as sns from "aws-cdk-lib/aws-sns";
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as sns from 'aws-cdk-lib/aws-sns';
 
-import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
+import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import {
-  CONFIG_FOLDER,
-  DRUID_IMAGE_FOLDER,
-  EXTENSIONS_FOLDER,
-  S3_ACCESS_LOGS_PREFIX,
-  SCRIPTS_FOLDER,
-  VPC_FLOW_LOGS_PREFIX,
-  ZOOKEEPER_IMAGE_FOLDER,
-} from "../utils/constants";
-import {
-  DruidDeepStorageConfig,
-  OidcIdpConfig,
-  SubnetMapping,
-} from "../utils/types";
+    CONFIG_FOLDER,
+    DRUID_IMAGE_FOLDER,
+    EXTENSIONS_FOLDER,
+    S3_ACCESS_LOGS_PREFIX,
+    SCRIPTS_FOLDER,
+    VPC_FLOW_LOGS_PREFIX,
+    ZOOKEEPER_IMAGE_FOLDER,
+} from '../utils/constants';
+import { DruidDeepStorageConfig, OidcIdpConfig, SubnetMapping } from '../utils/types';
 
-import { Construct } from "constructs";
+import { Construct } from 'constructs';
 import { v4 as uuidv4 } from 'uuid';
-import { DruidVpc } from "./druidVpc";
-import { addCfnNagSuppression } from "./cfnNagSuppression";
+import { DruidVpc } from './druidVpc';
+import { addCfnNagSuppression } from './cfnNagSuppression';
 
 export interface BaseInfrastructureProps {
     readonly vpcId?: string;
@@ -45,16 +41,16 @@ export interface BaseInfrastructureProps {
 }
 
 export class BaseInfrastructure extends Construct {
-  public readonly vpc: ec2.IVpc;
-  public readonly bastion?: ec2.BastionHostLinux;
-  public readonly deepStorageEncryptionKey?: kms.IKey;
-  public readonly deepStorageBucket: s3.IBucket;
-  public readonly installationBucket: s3.IBucket;
-  public readonly serverAccessLogsBucket: s3.IBucket;
-  public readonly druidImageDeployment?: BucketDeployment;
-  public readonly zookeeperImageDeployment?: BucketDeployment;
-  public readonly oidcIdpClientSecret?: secretsmanager.ISecret;
-  public readonly snsTopic: sns.ITopic;
+    public readonly vpc: ec2.IVpc;
+    public readonly bastion?: ec2.BastionHostLinux;
+    public readonly deepStorageEncryptionKey?: kms.IKey;
+    public readonly deepStorageBucket: s3.IBucket;
+    public readonly installationBucket: s3.IBucket;
+    public readonly serverAccessLogsBucket: s3.IBucket;
+    public readonly druidImageDeployment?: BucketDeployment;
+    public readonly zookeeperImageDeployment?: BucketDeployment;
+    public readonly oidcIdpClientSecret?: secretsmanager.ISecret;
+    public readonly snsTopic: sns.ITopic;
 
     private readonly s3ClearLambdaFunction?: cdk.aws_lambda.Function;
     private readonly s3ClearLambdaRole?: cdk.aws_iam.Role;
@@ -63,12 +59,12 @@ export class BaseInfrastructure extends Construct {
     public constructor(scope: Construct, id: string, props: BaseInfrastructureProps) {
         super(scope, id);
 
-    const commonS3BucketProperties = {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      versioned: true,
-      enforceSSL: true,
-      removalPolicy: props.removalPolicy,
-    };
+        const commonS3BucketProperties = {
+            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            versioned: true,
+            enforceSSL: true,
+            removalPolicy: props.removalPolicy,
+        };
 
         // Provision the S3 Clear Lambda Function if needed.
         if (props.provisionS3Clear) {
@@ -416,10 +412,10 @@ export class BaseInfrastructure extends Construct {
             // If a bucket ARN is provided without a KMS key, it is assumed to be SSE-S3
             deepStorageEncryptionKey = props.druidDeepStorageConfig.bucketEncryptionKeyArn
                 ? kms.Key.fromKeyArn(
-                      this,
-                      deepStorageEncryptionKeyId,
-                      props.druidDeepStorageConfig.bucketEncryptionKeyArn
-                  )
+                    this,
+                    deepStorageEncryptionKeyId,
+                    props.druidDeepStorageConfig.bucketEncryptionKeyArn
+                )
                 : undefined;
             deepStorageBucket = s3.Bucket.fromBucketArn(
                 this,
@@ -430,13 +426,13 @@ export class BaseInfrastructure extends Construct {
             deepStorageEncryptionKey = props.druidDeepStorageConfig
                 ?.bucketEncryptionKeyArn
                 ? kms.Key.fromKeyArn(
-                      this,
-                      deepStorageEncryptionKeyId,
-                      props.druidDeepStorageConfig.bucketEncryptionKeyArn
-                  )
+                    this,
+                    deepStorageEncryptionKeyId,
+                    props.druidDeepStorageConfig.bucketEncryptionKeyArn
+                )
                 : new kms.Key(this, deepStorageEncryptionKeyId, {
-                      enableKeyRotation: true,
-                  });
+                    enableKeyRotation: true,
+                });
 
             // prettier-ignore
             deepStorageBucket = new s3.Bucket(this, 'deep-storage-bucket', { // NOSONAR - commonS3BucketProperties provides bucket parameters
@@ -465,67 +461,4 @@ export class BaseInfrastructure extends Construct {
 
         return [deepStorageBucket, deepStorageEncryptionKey];
     }
-
-    if (props.initBastion) {
-      this.bastion = new ec2.BastionHostLinux(this, "bastion", {
-        vpc: this.vpc,
-        subnetSelection: {
-          subnetType: ec2.SubnetType.PUBLIC,
-        },
-        requireImdsv2: true,
-      });
-    }
-
-    const deepStorageEncryptionKeyId = "deep-storage-encryption-key";
-    if (props.druidDeepStorageConfig?.bucketArn) {
-      // If a bucket ARN is provided without a KMS key, it is assumed to be SSE-S3
-      this.deepStorageEncryptionKey = props.druidDeepStorageConfig
-        .bucketEncryptionKeyArn
-        ? kms.Key.fromKeyArn(
-            this,
-            deepStorageEncryptionKeyId,
-            props.druidDeepStorageConfig.bucketEncryptionKeyArn,
-          )
-        : undefined;
-      this.deepStorageBucket = s3.Bucket.fromBucketArn(
-        this,
-        "deep-storage-bucket",
-        props.druidDeepStorageConfig.bucketArn,
-      );
-    } else {
-      this.deepStorageEncryptionKey = props.druidDeepStorageConfig
-        ?.bucketEncryptionKeyArn
-        ? kms.Key.fromKeyArn(
-            this,
-            deepStorageEncryptionKeyId,
-            props.druidDeepStorageConfig.bucketEncryptionKeyArn,
-          )
-        : new kms.Key(this, deepStorageEncryptionKeyId, {
-            enableKeyRotation: true,
-          });
-
-      this.deepStorageBucket = new s3.Bucket(this, "deep-storage-bucket", {
-        ...commonS3BucketProperties,
-        encryptionKey: this.deepStorageEncryptionKey,
-        encryption: s3.BucketEncryption.KMS,
-        serverAccessLogsPrefix: S3_ACCESS_LOGS_PREFIX,
-        serverAccessLogsBucket: this.serverAccessLogsBucket,
-      });
-    }
-
-    if (props.oidcIdpConfig) {
-      this.oidcIdpClientSecret = secretsmanager.Secret.fromSecretCompleteArn(
-        this,
-        "druid-oidc-client-secret",
-        props.oidcIdpConfig.clientSecretArn,
-      );
-    }
-
-    this.snsTopic = new sns.Topic(this, "asg-notification", {
-      masterKey: new kms.Key(this, "asg-notification-topic", {
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        enableKeyRotation: true,
-      }),
-    });
-  }
 }
