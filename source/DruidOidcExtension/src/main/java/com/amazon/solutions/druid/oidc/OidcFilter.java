@@ -10,6 +10,7 @@ import org.apache.druid.server.security.AuthConfig;
 import org.apache.druid.server.security.AuthenticationResult;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.DefaultCallbackLogic;
@@ -35,22 +36,22 @@ public class OidcFilter implements Filter {
 
     private final Config pac4jConfig;
     private final OidcConfig oidcConfig;
-    private final SecurityLogic<Object, JEEContext> securityLogic;
-    private final CallbackLogic<Object, JEEContext> callbackLogic;
-    private final SessionStore<JEEContext> sessionStore;
+    private final SecurityLogic securityLogic;
+    private final CallbackLogic callbackLogic;
+    private final SessionStore sessionStore;
 
     private final String name;
     private final String authorizerName;
 
     public OidcFilter(String name, String authorizerName, Config pac4jConfig, OidcConfig oidcConfig,
             String cookiePassphrase) {
-        this(name, authorizerName, pac4jConfig, oidcConfig, cookiePassphrase, new DefaultSecurityLogic<>(),
-                new DefaultCallbackLogic<>());
+        this(name, authorizerName, pac4jConfig, oidcConfig, cookiePassphrase, new DefaultSecurityLogic(),
+                new DefaultCallbackLogic());
     }
 
     public OidcFilter(String name, String authorizerName, Config pac4jConfig, OidcConfig oidcConfig,
-            String cookiePassphrase, SecurityLogic<Object, JEEContext> securityLogic,
-            CallbackLogic<Object, JEEContext> callbackLogic) {
+            String cookiePassphrase, SecurityLogic securityLogic,
+            CallbackLogic callbackLogic) {
         this.pac4jConfig = pac4jConfig;
         this.oidcConfig = oidcConfig;
         this.securityLogic = securityLogic;
@@ -59,7 +60,7 @@ public class OidcFilter implements Filter {
         this.name = name;
         this.authorizerName = authorizerName;
 
-        this.sessionStore = new OidcSessionStore<>(cookiePassphrase);
+        this.sessionStore = new OidcSessionStore(cookiePassphrase);
     }
 
     @Override
@@ -81,20 +82,22 @@ public class OidcFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        JEEContext context = new JEEContext(httpServletRequest, httpServletResponse, sessionStore);
+        JEEContext context = new JEEContext(httpServletRequest, httpServletResponse);
 
         if (OidcCallbackResource.SELF_URL.equals(httpServletRequest.getRequestURI())) {
             callbackLogic.perform(
                     context,
+                    sessionStore,
                     pac4jConfig,
                     JEEHttpActionAdapter.INSTANCE,
                     "/",
-                    true, false, false, null);
+                    true, null);
         } else {
             CommonProfile profile = (CommonProfile) securityLogic.perform(
                     context,
+                    sessionStore,
                     pac4jConfig,
-                    (JEEContext ctx, Collection<UserProfile> profiles, Object... parameters) -> {
+                    (WebContext ctx, SessionStore ss, Collection<UserProfile> profiles, Object... parameters) -> {
                         if (profiles.isEmpty()) {
                             logger.warn("No profiles found after OIDC auth.");
                             return null;
@@ -103,7 +106,7 @@ public class OidcFilter implements Filter {
                         }
                     },
                     JEEHttpActionAdapter.INSTANCE,
-                    null, "none", null, null);
+                    null, "none", null);
             // Changed the Authorizer from null to "none".
             // In the older version, if it is null, it simply grant access and returns
             // authorized.
