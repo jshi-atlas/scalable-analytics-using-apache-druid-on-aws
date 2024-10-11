@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.SecurityLogic;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
@@ -35,8 +36,8 @@ public class OidcFilterTest {
     private OidcFilter filter;
     private Config pac4jConfig;
     private OidcConfig oidcConfig;
-    private SecurityLogic<Object, JEEContext> securityLogic;
-    private CallbackLogic<Object, JEEContext> callbackLogic;
+    private SecurityLogic securityLogic;
+    private CallbackLogic callbackLogic;
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -71,8 +72,8 @@ public class OidcFilterTest {
         filter.doFilter(request, response, null);
 
         // assert
-        verify(callbackLogic).perform(any(JEEContext.class), any(), any(HttpActionAdapter.class), eq("/"), eq(true),
-                eq(false), eq(false), any());
+        verify(callbackLogic).perform(any(WebContext.class), any(), any(), any(), any(),
+                eq(true), any());
     }
 
     @Test

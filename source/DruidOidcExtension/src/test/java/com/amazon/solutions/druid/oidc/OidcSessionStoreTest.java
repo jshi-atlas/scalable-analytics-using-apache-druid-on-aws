@@ -17,7 +17,7 @@ import java.util.Optional;
 public class OidcSessionStoreTest {
     @Test
     public void testSetAndGet() {
-        OidcSessionStore<WebContext> sessionStore = new OidcSessionStore<WebContext>("test-cookie-passphrase");
+        OidcSessionStore sessionStore = new OidcSessionStore("test-cookie-passphrase");
 
         WebContext webContext1 = EasyMock.mock(WebContext.class);
         EasyMock.expect(webContext1.getScheme()).andReturn("https");
@@ -43,7 +43,7 @@ public class OidcSessionStoreTest {
 
     @Test
     public void testSetNull() {
-        OidcSessionStore<WebContext> sessionStore = new OidcSessionStore<WebContext>("test-cookie-passphrase");
+        OidcSessionStore sessionStore = new OidcSessionStore("test-cookie-passphrase");
 
         WebContext webContext = EasyMock.mock(WebContext.class);
         EasyMock.expect(webContext.getScheme()).andReturn("https");
