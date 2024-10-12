@@ -57,7 +57,7 @@ public class OidcSessionStore implements SessionStore {
 
     @Override
     public Optional<String> getSessionId(WebContext context, boolean var) {
-        return null;
+        return Optional.empty();
     }
 
     @Nullable
