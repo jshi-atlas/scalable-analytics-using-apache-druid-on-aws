@@ -73,7 +73,7 @@ public class OidcFilterTest {
 
         // assert
         verify(callbackLogic).perform(any(WebContext.class), any(), any(), any(), any(),
-                eq(true), any());
+                eq(false), any());
     }
 
     @Test
