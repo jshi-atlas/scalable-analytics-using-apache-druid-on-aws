@@ -91,7 +91,7 @@ public class OidcFilter implements Filter {
                     pac4jConfig,
                     JEEHttpActionAdapter.INSTANCE,
                     "/",
-                    true, null);
+                    false, null);
         } else {
             CommonProfile profile = (CommonProfile) securityLogic.perform(
                     context,
@@ -106,7 +106,7 @@ public class OidcFilter implements Filter {
                         }
                     },
                     JEEHttpActionAdapter.INSTANCE,
-                    null, "none", null);
+                    "", "none", null);
             // Changed the Authorizer from null to "none".
             // In the older version, if it is null, it simply grant access and returns
             // authorized.
