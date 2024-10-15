@@ -33,6 +33,7 @@
 
         <!-- Following must be updated along with any updates to pac4j version -->
         <nimbus.lang.tag.version>1.7</nimbus.lang.tag.version>
+        <nimbus.jose.jwt.version>9.40</nimbus.jose.jwt.version>
         <oauth2.oidc.sdk.version>11.13</oauth2.oidc.sdk.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -67,6 +68,11 @@
             <groupId>com.nimbusds</groupId>
             <artifactId>lang-tag</artifactId>
             <version>${nimbus.lang.tag.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus.jose.jwt.version}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
