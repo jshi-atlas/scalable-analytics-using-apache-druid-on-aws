@@ -25,7 +25,7 @@ import org.apache.druid.server.security.AuthenticationResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.JEEContext;
+import org.pac4j.jee.context.JEEContext;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.engine.CallbackLogic;
 import org.pac4j.core.engine.SecurityLogic;
