@@ -2,6 +2,8 @@
 set -e
 cdk_context="$(npm run -s cdk context -- -j)"
 
+echo $cdk_context
+
 druid_version=$(echo "$cdk_context" | grep "druidVersion" | awk '/druidVersion/{print $NF}' | tr -d '"' | tr -d ',')
 druid_version=${druid_version:-30.0.0}
 
