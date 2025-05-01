@@ -36,6 +36,7 @@ export interface DruidAutoScalingGroupProps {
     readonly serviceTier?: string;
     readonly brokerTiers?: string[];
     readonly baseUrl: string;
+    readonly customLifecycleHookParams?: CustomLifecycleHookParams;
 }
 
 // Shared context parameters across all auto scaling groups
@@ -49,6 +50,11 @@ export interface DruidAutoScalingGroupContext {
     readonly customAmi?: CustomAmi;
     readonly solutionVersion: string;
     readonly tlsCertificateSecretName: string;
+}
+
+export interface CustomLifecycleHookParams {
+    readonly defaultResult?: as.DefaultResult;
+    readonly heartbeatTimeout?: number;
 }
 
 //Creates Launch Template for EC2 and Autoscaling group for different druid process Types
@@ -120,7 +126,8 @@ export class DruidAutoScalingGroup extends Construct {
             asg,
             props.nodeType,
             nodeTierName,
-            this.gracefulTerminationParam
+            this.gracefulTerminationParam,
+            props.customLifecycleHookParams
         );
 
         this.autoScalingGroup = asg;
@@ -131,15 +138,16 @@ export class DruidAutoScalingGroup extends Construct {
         asg: as.IAutoScalingGroup,
         nodeType: DruidNodeType,
         nodeTierName: string,
-        gracefulTerminationParam: ssm.IStringParameter
+        gracefulTerminationParam: ssm.IStringParameter,
+        customLifecycleHookParams?: CustomLifecycleHookParams
     ): void {
         // using prettier-ignore prevents prettier from reformatting the nosonar line to the next line
         // prettier-ignore
         new as.CfnLifecycleHook(this, 'lifecycle-termination', { // NOSONAR (typescript:S1848) - cdk construct is used
             autoScalingGroupName: asg.autoScalingGroupName,
             lifecycleTransition: as.LifecycleTransition.INSTANCE_TERMINATING,
-            defaultResult: as.DefaultResult.CONTINUE,
-            heartbeatTimeout: INSTANCE_TERMINATION_TIMEOUT,
+            defaultResult: customLifecycleHookParams?.defaultResult ?? as.DefaultResult.CONTINUE,
+            heartbeatTimeout: customLifecycleHookParams?.heartbeatTimeout ?? INSTANCE_TERMINATION_TIMEOUT,
         });
 
         // prettier-ignore
