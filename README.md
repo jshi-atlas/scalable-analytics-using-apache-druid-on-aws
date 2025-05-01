@@ -609,6 +609,10 @@ An auto scaling policy consists of predefined rules and parameters that dictate 
             "maxNodes": number
         }
     ]
+    "customLifecycleHookParams": {
+        "defaultResult": "CONTINUE" or "ABANDON",
+        "heartbeatTimeout": number between [30, 7200] 
+    }
 }
 ```
 
