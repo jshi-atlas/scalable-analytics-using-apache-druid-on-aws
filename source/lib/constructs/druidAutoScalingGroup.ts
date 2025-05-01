@@ -198,7 +198,7 @@ export class DruidAutoScalingGroup extends Construct {
             ),
             DRUID_VERSION: asgContext.clusterParams.druidVersion,
             DRUID_EXTENSIONS: JSON.stringify(asgContext.clusterParams.druidExtensions),
-            DRUID_COMPONENT: nodeTierName,
+            DRUID_COMPONENT: ec2Config[nodeTierName]?.instanceType ?? '',
             REGION: cdk.Aws.REGION,
             STACK_NAME: cdk.Aws.STACK_NAME,
             RESOURCE_NAME: (asg.node.defaultChild as as.CfnAutoScalingGroup).logicalId,
