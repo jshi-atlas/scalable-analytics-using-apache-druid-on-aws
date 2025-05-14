@@ -297,6 +297,7 @@ export interface OidcIdpConfig {
     groupClaimName?: string;
     customScopes?: string[];
     groupRoleMappings?: Record<string, string[]>;
+    readTimeout?: number;
 }
 
 export interface StatsdEmitterConfig {
