@@ -139,7 +139,7 @@ export function createLaunchTemplate(
         blockDevices,
         httpEndpoint: true,
         httpProtocolIpv6: true,
-        httpPutResponseHopLimit: 1,
+        httpPutResponseHopLimit: 2,
         httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
         instanceMetadataTags: true,
         requireImdsv2: true,
