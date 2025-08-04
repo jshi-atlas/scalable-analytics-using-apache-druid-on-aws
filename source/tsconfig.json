@@ -5,8 +5,7 @@
     "module": "commonjs",
     "lib": [
       "es2018",
-      "dom",
-      "es6"
+      "dom"
     ],
     "declaration": true,
     "strict": true,
