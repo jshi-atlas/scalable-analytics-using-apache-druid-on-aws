@@ -4,7 +4,9 @@
     "target": "ES2018",
     "module": "commonjs",
     "lib": [
-      "es2018"
+      "es2018",
+      "dom",
+      "es6"
     ],
     "declaration": true,
     "strict": true,
