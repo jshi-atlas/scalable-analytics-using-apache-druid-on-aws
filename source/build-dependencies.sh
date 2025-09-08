@@ -97,7 +97,7 @@ download_druid()
 download_zookeeper() 
 {
     local zookeeper_version=$(echo "$cdk_context"  | grep "zookeeperVersion" | awk '/zookeeperVersion/{print $NF}' | tr -d '"' | tr -d ',')
-    zookeeper_version=${zookeeper_version:-3.8.0}
+    zookeeper_version=${zookeeper_version:-3.8.4}
     download_url="https://downloads.apache.org/zookeeper/zookeeper-${zookeeper_version}/apache-zookeeper-${zookeeper_version}-bin.tar.gz"
     download_and_verify_file "$zookeeper_version" "$download_url" "./zookeeper-bin" "apache-zookeeper"
 }
