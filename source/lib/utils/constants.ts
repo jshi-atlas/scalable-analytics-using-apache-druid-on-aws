@@ -68,7 +68,7 @@ export const DEEP_STORAGE_PREFIX = 'druid/segments';
 
 export const DEFAULT_TIER = '_default_tier';
 
-export const ZOOKEEPER_DEFAULT_VERSION = '3.8.0';
+export const ZOOKEEPER_DEFAULT_VERSION = '3.8.4';
 
 export const DRUID_DEFAULT_VERSION = '27.0.0';
 

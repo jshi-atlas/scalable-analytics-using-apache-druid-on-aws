@@ -95,7 +95,7 @@ export const configScheme = {
             title: 'Zookeeper Version',
             $id: '#/properties/zookeeperVersion',
             description: 'Version of Zookeeper to use.',
-            examples: ['3.8.0'],
+            examples: ['3.8.4'],
         },
         druidVersion: {
             type: 'string',
