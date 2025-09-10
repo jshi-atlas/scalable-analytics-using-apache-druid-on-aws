@@ -38,7 +38,7 @@
         <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
       </Policies>
       <DefaultRolloverStrategy>
-        <Delete basePath="${sys:dr  uid.log.path}/" maxDepth="1">
+        <Delete basePath="${sys:druid.log.path}/" maxDepth="1">
           <IfFileName glob="*.log" />
           <IfLastModified age="7d" />
         </Delete>
