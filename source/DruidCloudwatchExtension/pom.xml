@@ -10,6 +10,7 @@
 
     <properties>
         <druid.version>25.0.0</druid.version>
+        <jackson.version>2.15.0</jackson.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <jdk.version>1.8</jdk.version>
@@ -44,6 +45,22 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>5.3.1</version>
+        </dependency>
+        <!-- Explicit Jackson dependencies to override transitive versions -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 
