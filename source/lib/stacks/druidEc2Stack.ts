@@ -777,9 +777,7 @@ export class DruidEc2Stack extends DruidStack {
                 port: 443,
                 certificates: [this.certificate],
                 defaultAction: elb.ListenerAction.forward([targetGrp]),
-                sslPolicy: this.props.clusterParams.enableFipsEndpoints
-                    ? elb.SslPolicy.TLS12 // fall back to 1.2 for FIPS enabled ALB as 1.3 is yet to be supported
-                    : elb.SslPolicy.RECOMMENDED_TLS,
+                sslPolicy: elb.SslPolicy.RECOMMENDED_TLS,
             });
         } else {
             loadbalancer.addListener(`listener-http-id`, {

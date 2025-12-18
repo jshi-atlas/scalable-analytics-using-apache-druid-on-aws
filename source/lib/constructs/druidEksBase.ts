@@ -420,9 +420,7 @@ export abstract class DruidEksBase extends Construct {
             alb_scheme: this.props.druidClusterParams.internetFacing
                 ? 'internet-facing'
                 : 'internal',
-            alb_ssl_policy: this.props.druidClusterParams.enableFipsEndpoints
-                ? elb.SslPolicy.TLS12
-                : elb.SslPolicy.RECOMMENDED_TLS,
+            alb_ssl_policy: elb.SslPolicy.RECOMMENDED_TLS,
             alb_tags: Object.entries({
                 ...this.props.solutionTags,
                 ...(this.props.druidClusterParams.enableFipsEndpoints && {
