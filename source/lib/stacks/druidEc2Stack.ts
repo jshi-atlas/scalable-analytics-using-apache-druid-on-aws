@@ -777,7 +777,7 @@ export class DruidEc2Stack extends DruidStack {
                 port: 443,
                 certificates: [this.certificate],
                 defaultAction: elb.ListenerAction.forward([targetGrp]),
-                sslPolicy: elb.SslPolicy.RECOMMENDED_TLS,
+                sslPolicy: elb.SslPolicy.TLS12,
             });
         } else {
             loadbalancer.addListener(`listener-http-id`, {
