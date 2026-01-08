@@ -778,7 +778,7 @@ export class DruidEc2Stack extends DruidStack {
                 certificates: [this.certificate],
                 defaultAction: elb.ListenerAction.forward([targetGrp]),
                 sslPolicy: this.props.clusterParams.enableFipsEndpoints
-                    ? elb.SslPolicy.TLS12 // fall back to 1.2 for FIPS enabled ALB as 1.3 is yet to be supported
+                    ? elb.SslPolicy.FIPS_TLS13_12 // FIPS-compliant policy required for FedRAMP compliance (ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04)
                     : elb.SslPolicy.RECOMMENDED_TLS,
             });
         } else {

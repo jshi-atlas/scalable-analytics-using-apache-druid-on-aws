@@ -421,7 +421,7 @@ export abstract class DruidEksBase extends Construct {
                 ? 'internet-facing'
                 : 'internal',
             alb_ssl_policy: this.props.druidClusterParams.enableFipsEndpoints
-                ? elb.SslPolicy.TLS12
+                ? elb.SslPolicy.FIPS_TLS13_12 // FIPS-compliant policy required for FedRAMP compliance (ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04)
                 : elb.SslPolicy.RECOMMENDED_TLS,
             alb_tags: Object.entries({
                 ...this.props.solutionTags,
