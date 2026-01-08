@@ -777,8 +777,9 @@ export class DruidEc2Stack extends DruidStack {
                 port: 443,
                 certificates: [this.certificate],
                 defaultAction: elb.ListenerAction.forward([targetGrp]),
-                // https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_elasticloadbalancingv2/SslPolicy.html#aws_cdk.aws_elasticloadbalancingv2.SslPolicy.RECOMMENDED_TLS
-                sslPolicy: elb.SslPolicy.RECOMMENDED_TLS,
+                sslPolicy: this.props.clusterParams.enableFipsEndpoints
+                    ? elb.SslPolicy.FIPS_TLS13_12 // FIPS-compliant policy required for FedRAMP compliance (ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04)
+                    : elb.SslPolicy.RECOMMENDED_TLS,
             });
         } else {
             loadbalancer.addListener(`listener-http-id`, {
