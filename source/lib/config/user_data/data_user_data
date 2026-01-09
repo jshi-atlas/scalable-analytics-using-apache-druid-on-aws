@@ -3,11 +3,8 @@ HISTORICAL_CONFIG_VERSION={{HISTORICAL_CONFIG_VERSION}}
 MIDDLEMANAGER_CONFIG_VERSION={{MIDDLEMANAGER_CONFIG_VERSION}}
 
 echo " >>druid>> mounting NVME disks $(date)"
-# Detect the root partition to avoid formatting the OS disk
-root_src="$(findmnt -n -o SOURCE /)"
-root_disk="/dev/$(lsblk -no PKNAME "$root_src")"
 PATH_INDEX=2
-for NVME_PATH in $(nvme list -o json | jq --arg root "$root_disk" '.Devices | map(select(.DevicePath != $root).DevicePath) | sort | join(" ")' | tr -d '"')
+for NVME_PATH in $(nvme list -o json | jq '.Devices | map(select(.DevicePath != "/dev/nvme0n1").DevicePath) | sort | join(" ")' | tr -d '"')
 do
     MOUNT_POINT=/mnt/disk${PATH_INDEX}
     mkdir -p $MOUNT_POINT
