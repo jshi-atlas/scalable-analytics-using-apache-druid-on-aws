@@ -35,7 +35,7 @@ build_druid_cloudwatch()
 {
     echo "building druid cloudwatch emitter extension"
     cd DruidCloudwatchExtension && \
-       mvn clean verify package && \
+       mvn -B -q clean verify package && \
        rm -rf ../lib/docker/extensions/druid-cloudwatch/ && \
        mkdir -p ../lib/docker/extensions/druid-cloudwatch/ && \
        cp -f target/druid-cloudwatch-25.0.0-jar-with-dependencies.jar ../lib/docker/extensions/druid-cloudwatch/ && cd ..
@@ -45,7 +45,7 @@ build_druid_oidc()
 {
     echo "building druid oidc extension"
     cd DruidOidcExtension && \
-       mvn clean verify package && \
+       mvn -B -q clean verify package && \
        rm -rf ../lib/docker/extensions/druid-oidc/ && \
        mkdir -p ../lib/docker/extensions/druid-oidc/ && \
        cp -f target/druid-oidc-29.0.1-jar-with-dependencies.jar ../lib/docker/extensions/druid-oidc/
