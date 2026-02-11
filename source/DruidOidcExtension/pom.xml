@@ -146,7 +146,7 @@
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <scope>test</scope>
-            <version>5.0.0</version>
+            <version>5.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

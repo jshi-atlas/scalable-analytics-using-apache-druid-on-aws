@@ -90,7 +90,7 @@ download_and_verify_file()
 
 download_druid() 
 {
-    download_url="https://downloads.apache.org/druid/${druid_version}/apache-druid-${druid_version}-bin.tar.gz"
+    download_url="https://archive.apache.org/dist/druid/${druid_version}/apache-druid-${druid_version}-bin.tar.gz"
     download_and_verify_file "$druid_version" "$download_url" "./druid-bin" "apache-druid"
 }
 
