@@ -95,6 +95,10 @@ export class AuroraMetadataStore extends MetadataStore {
             storageEncryptionKey: this.encryptionKey,
             vpc: props.vpc,
             vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+            // Enforce SSL/TLS for all connections (encryption in transit) for compliance.
+            parameters: {
+                'rds.force_ssl': '1',
+            },
         };
 
         const cluster = metadataStoreConfig?.rdsSnapshotArn
