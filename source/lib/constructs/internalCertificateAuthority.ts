@@ -21,6 +21,8 @@ export interface InternalCertificateAuthorityProps {
 
 export class InternalCertificateAuthority extends Construct {
     public readonly TlsCertificate: secretsmanager.ISecret;
+    /** PEM bundle (cert + AES-encrypted private key) for Ubuntu 22.04 FIPS nodes; populate via migrate_ca_p12_to_ca_crt_enc.sh */
+    public readonly TlsCertificatePem: secretsmanager.ISecret;
 
     public constructor(
         scope: Construct,
@@ -29,12 +31,21 @@ export class InternalCertificateAuthority extends Construct {
     ) {
         super(scope, id);
 
+        const tlsEncryptionKey = new kms.Key(this, 'tls-certificate-encryption-key', {
+            enableKeyRotation: true,
+            removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+        });
+
         this.TlsCertificate = new secretsmanager.Secret(this, 'tls-certificate', {
             description: 'TLS certificates for druid internal components',
-            encryptionKey: new kms.Key(this, 'tls-certificate-encryption-key', {
-                enableKeyRotation: true,
-                removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
-            }),
+            encryptionKey: tlsEncryptionKey,
+            removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+        });
+
+        this.TlsCertificatePem = new secretsmanager.Secret(this, 'tls-certificate-pem', {
+            description:
+                'TLS CA PEM bundle for druid internal components (Ubuntu 22.04 FIPS); populate from PKCS#12 secret via migrate_ca_p12_to_ca_crt_enc.sh',
+            encryptionKey: tlsEncryptionKey,
             removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
         });
 

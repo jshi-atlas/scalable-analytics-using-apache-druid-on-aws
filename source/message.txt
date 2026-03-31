@@ -1,0 +1,205 @@
+Hello,
+
+Please find below the current behavior in the repository, the Ubuntu 22.04 FIPS issue, and the proposed migration path for an existing cluster that already uses a CA stored as ca.p12.
+
+1. Current behavior in the repository
+
+The CA is generated, during stack creation, by the Lambda custom resource in source/lib/lambdas/certificateGenerator.ts.
+
+That Lambda generates a self-signed CA, packages the CA certificate and CA private key into a PKCS#12 bundle protected with password changeit, and stores it in AWS Secrets Manager as SecretBinary.
+
+EC2 bootstrap later downloads that already-existing secret and uses it to generate node certificates plus keystore.jks and truststore.jks.
+
+2. Root cause on Ubuntu 22.04 FIPS
+
+The legacy runtime flow expects a CA secret in PKCS#12 form (ca.p12) and performs direct openssl pkcs12 operations during node bootstrap.
+
+On Ubuntu 22.04 with FIPS enabled, this PKCS#12 extraction step is not reliable for the existing CA bundle.
+
+Because of that, the legacy setup_tls_certificates.sh path is not suitable for Ubuntu 22.04 FIPS nodes.
+
+3. What is already implemented locally
+
+common_user_data now detects Ubuntu 22.04 with FIPS enabled and selects a dedicated FIPS TLS script.
+
+The dedicated script is source/lib/uploads/scripts/setup_tls_certificates2204fips.sh.
+
+That script avoids runtime openssl pkcs12 extraction and instead expects a different CA secret format:
+
+a PEM bundle containing the CA certificate and an encrypted private key,
+
+stored in Secrets Manager as SecretBinary,
+
+downloaded locally as ca.crt.enc.
+
+The script then:
+
+extracts the CA private key and CA certificate from ca.crt.enc,
+
+generates the node key directly in keystore.jks using keytool,
+
+creates a CSR,
+
+signs the CSR with the CA,
+
+imports the certificate chain into keystore.jks,
+
+imports the CA certificate into truststore.jks.
+
+4. Current setup_tls_certificates2204fips.sh logic
+
+#!/bin/bash
+# usage: setup_tls_certificates2204fips.sh TLS_CERT_HOME TLS_CERTIFICATE_SECRET_NAME_PEM TLS_KEYSTORE_PASSWORD
+if [ "$#" -ne 3 ]; then
+  echo "Usage: $0 TLS_CERT_HOME TLS_CERTIFICATE_SECRET_NAME_PEM TLS_KEYSTORE_PASSWORD"
+  exit 1
+fi
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+HOSTNAME=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/hostname)
+TLS_CERT_HOME="$1"
+TLS_CERTIFICATE_SECRET_NAME_PEM="$2"
+TLS_KEYSTORE_PASSWORD="$3"
+mkdir -p "$TLS_CERT_HOME"
+cd "$TLS_CERT_HOME" || exit 1
+# Download CA from Secrets Manager (SecretBinary expected)
+aws secretsmanager get-secret-value --secret-id "$TLS_CERTIFICATE_SECRET_NAME_PEM" --output text --query SecretBinary | base64 --decode > ca.crt.enc
+# Extract CA certificate and encrypted private key
+openssl pkey -in ca.crt.enc -out ca.key -passin pass:changeit
+openssl x509 -in ca.crt.enc -out ca.cert.pem
+cat ca.cert.pem ca.key > ca.crt
+# Generate node key directly in JKS and create CSR
+keytool -genkeypair -alias druid -keyalg RSA -keysize 2048 -keystore keystore.jks -storetype JKS -storepass "$TLS_KEYSTORE_PASSWORD" -keypass "$TLS_KEYSTORE_PASSWORD" -dname "CN=$HOSTNAME" -validity 365 -noprompt
+keytool -certreq -alias druid -keystore keystore.jks -storepass "$TLS_KEYSTORE_PASSWORD" -file druid.csr
+# Sign CSR with CA
+openssl x509 -req -in druid.csr -CA ca.crt -CAkey ca.crt -CAcreateserial -out druid.pem -days 365 -sha256
+cat druid.pem ca.cert.pem > druid-chain.pem
+# Import CA + signed certificate into keystore
+keytool -importcert -file ca.cert.pem -alias druid-ca -keystore keystore.jks -storepass "$TLS_KEYSTORE_PASSWORD" -noprompt
+keytool -importcert -file druid-chain.pem -alias druid -keystore keystore.jks -storepass "$TLS_KEYSTORE_PASSWORD" -noprompt
+# Truststore
+keytool -importcert -file ca.cert.pem -alias druid-ca -keystore truststore.jks -deststorepass "$TLS_KEYSTORE_PASSWORD" -noprompt
+# Cleanup
+rm -f druid.csr druid.pem druid-chain.pem ca.crt ca.crt.enc ca.cert.pem ca.key ca.crt.srl
+cd -
+5. Current condition in common_user_data
+
+The local branch selection in source/lib/config/user_data/common_user_data is:
+
+michalwisniewski@fedora:~/scalable-analytics-using-apache-druid-on-aws$ git diff source/lib/config/user_data/common_user_data
+diff --git a/source/lib/config/user_data/common_user_data b/source/lib/config/user_data/common_user_data
+index 388c245..ce55fc1 100644
+--- a/source/lib/config/user_data/common_user_data
++++ b/source/lib/config/user_data/common_user_data
+@@ -83,7 +83,19 @@ cp -f $DRUID_SOLUTION_CONFIG/supervisor/supervisord.conf $DRUID_HOME/conf/superv
+ echo " >>druid>> creating keystore and trust store for internal TLS certificates $(date)"
+ export RANDFILE=/tmp/.rnd
+ export TLS_KEYSTORE_PASSWORD=$(openssl rand -base64 48 | cut -c1-"24")
+-bash $DRUID_HOME/scripts/setup_tls_certificates.sh $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME}} "$TLS_KEYSTORE_PASSWORD"
++
++if [ -r /etc/os-release ]; then
++    . /etc/os-release
++fi
++
++if [ "${ID:-}" = "ubuntu" ] && [ "${VERSION_ID:-}" = "22.04" ] && [ -r /proc/sys/crypto/fips_enabled ] && grep -qx '1' /proc/sys/crypto/fips_enabled; then
++    echo " >>druid>> using Ubuntu 22.04 FIPS TLS setup script $(date)"
++    bash $DRUID_HOME/scripts/setup_tls_certificates2204fips.sh $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME_PEM}} "$TLS_KEYSTORE_PASSWORD"
++else
++    echo " >>druid>> using default TLS setup script $(date)"
++    bash $DRUID_HOME/scripts/setup_tls_certificates.sh $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME}} "$TLS_KEYSTORE_PASSWORD"
++fi
++#### bash $DRUID_HOME/scripts/setup_tls_certificates.sh $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME}} "$TLS_KEYSTORE_PASSWORD"
+Important note:
+
+The Ubuntu 22.04 FIPS branch in common_user_data now references {{TLS_CERTIFICATE_SECRET_NAME_PEM}}.
+
+The default branch continues to use {{TLS_CERTIFICATE_SECRET_NAME}}.
+
+The change is not yet complete end-to-end, because TLS_CERTIFICATE_SECRET_NAME_PEM still needs to be provided by the deployment configuration / CDK plumbing.
+
+For a one-time migration deployment, this value could be hardcoded in the script or user-data path if needed.
+
+The target implementation should pass TLS_CERTIFICATE_SECRET_NAME_PEM from deployment values / configuration rather than hardcoding it.
+
+6. Migration requirement for an existing cluster
+
+For an existing cluster, we must not generate a new CA.
+
+New Ubuntu 22.04 FIPS nodes must continue to use the same CA that already signed the certificates used by the existing nodes.
+
+Therefore, the correct approach is a one-time migration of the existing CA secret from:
+
+old format: ca.p12 in Secrets Manager,
+
+new format: PEM bundle with certificate + encrypted private key, still stored as SecretBinary.
+
+7. Conversion script for existing CA secret
+
+The following migration script was prepared for that purpose:
+
+migrate_ca_p12_to_ca_crt_enc.sh
+
+It performs:
+
+download of the existing ca.p12 secret from SecretBinary,
+
+extraction of CA certificate and CA private key,
+
+re-encryption of the private key as PEM using password changeit,
+
+creation of ca.crt.enc,
+
+upload of the new secret to Secrets Manager as SecretBinary.
+
+#!/bin/bash
+set -euo pipefail
+if [ "$#" -lt 2 ] || [ "$#" -gt 4 ]; then
+    echo "Usage: $0 SOURCE_TLS_SECRET_NAME DEST_TLS_SECRET_NAME_PEM [AWS_REGION] [KMS_KEY_ID]"
+    exit 1
+fi
+SOURCE_TLS_SECRET_NAME="$1"
+DEST_TLS_SECRET_NAME_PEM="$2"
+AWS_REGION="${3:-}"
+KMS_KEY_ID="${4:-}"
+AWS_ARGS=()
+if [ -n "$AWS_REGION" ]; then
+    AWS_ARGS+=(--region "$AWS_REGION")
+fi
+WORKDIR="$(mktemp -d)"
+trap 'rm -rf "$WORKDIR"' EXIT
+cd "$WORKDIR"
+aws "${AWS_ARGS[@]}" secretsmanager get-secret-value \
+    --secret-id "$SOURCE_TLS_SECRET_NAME" \
+    --query SecretBinary \
+    --output text | base64 --decode > ca.p12
+openssl pkcs12 -in ca.p12 -clcerts -nokeys -out ca.cert.pem -passin pass:changeit
+openssl pkcs12 -in ca.p12 -nocerts -nodes -out ca.key.pem -passin pass:changeit
+openssl pkey -in ca.key.pem -aes256 -passout pass:changeit -out ca.key.enc.pem
+cat ca.cert.pem ca.key.enc.pem > ca.crt.enc
+if aws "${AWS_ARGS[@]}" secretsmanager describe-secret --secret-id "$DEST_TLS_SECRET_NAME_PEM" >/dev/null 2>&1; then
+    aws "${AWS_ARGS[@]}" secretsmanager update-secret \
+        --secret-id "$DEST_TLS_SECRET_NAME_PEM" \
+        --secret-binary "fileb://$WORKDIR/ca.crt.enc"
+else
+    if [ -n "$KMS_KEY_ID" ]; then
+        aws "${AWS_ARGS[@]}" secretsmanager create-secret \
+            --name "$DEST_TLS_SECRET_NAME_PEM" \
+            --kms-key-id "$KMS_KEY_ID" \
+            --secret-binary "fileb://$WORKDIR/ca.crt.enc"
+    else
+        aws "${AWS_ARGS[@]}" secretsmanager create-secret \
+            --name "$DEST_TLS_SECRET_NAME_PEM" \
+            --secret-binary "fileb://$WORKDIR/ca.crt.enc"
+    fi
+fi
+8. Recommended next steps
+
+Create the new PEM-based CA secret from the existing ca.p12 using the migration script.
+
+Complete the deployment integration so that Ubuntu 22.04 FIPS nodes consume the PEM-based CA secret through TLS_CERTIFICATE_SECRET_NAME_PEM.
+
+For a one-time migration, using a temporary hardcoded secret name is acceptable if that simplifies rollout.
+
+The target state should expose TLS_CERTIFICATE_SECRET_NAME_PEM through deployment values / configuration and pass it through CDK/user-data explicitly.
+
+Keep the same CA during migration so that old and new nodes remain mutually trusted.
+
