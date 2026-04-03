@@ -29,14 +29,22 @@ export async function onEventHandler(
   console.info(`Processing event ${JSON.stringify(event)}`);
 
   if (event.RequestType === "Create") {
-    const certificate = generateCA();
+    const { pkcs12Der, pemBundle } = generateCA();
 
-    fs.writeFileSync("/tmp/output.p12", certificate, "binary"); // NOSONAR (typescript:S5443:directories are used safely here)
-
+    // Existing PKCS#12 secret
+    fs.writeFileSync("/tmp/output.p12", pkcs12Der, "binary"); // NOSONAR (typescript:S5443:directories are used safely here)
     await secrets.send(
       new sm.UpdateSecretCommand({
         SecretId: event.ResourceProperties.TLSSecretId,
         SecretBinary: fs.readFileSync("/tmp/output.p12"), // NOSONAR (typescript:S5443:directories are used safely here)
+      }),
+    );
+
+    // NEW: PEM bundle secret (cert + AES-encrypted private key) for Ubuntu 22.04 FIPS nodes
+    await secrets.send(
+      new sm.UpdateSecretCommand({
+        SecretId: event.ResourceProperties.TLSSecretIdPem,
+        SecretBinary: Buffer.from(pemBundle, "utf-8"),
       }),
     );
   }
@@ -44,7 +52,7 @@ export async function onEventHandler(
   return { ...event, Status: "SUCCESS", PhysicalResourceId: "" };
 }
 
-function generateCA(): string {
+function generateCA(): { pkcs12Der: string; pemBundle: string } {
   const keys = forge.pki.rsa.generateKeyPair(2048);
 
   const certificate = forge.pki.createCertificate();
@@ -68,6 +76,7 @@ function generateCA(): string {
 
   certificate.sign(keys.privateKey, forge.md.sha256.create());
 
+  // Existing PKCS#12 output
   const p12 = forge.pkcs12.toPkcs12Asn1(
     keys.privateKey,
     certificate,
@@ -76,8 +85,16 @@ function generateCA(): string {
       friendlyName: "druid",
     },
   );
+  const pkcs12Der = forge.asn1.toDer(p12).getBytes();
 
-  const der = forge.asn1.toDer(p12).getBytes();
+  // NEW: PEM bundle output (cert + AES-encrypted private key)
+  const certPem = forge.pki.certificateToPem(certificate);
+  const encryptedKeyPem = forge.pki.encryptRsaPrivateKey(
+    keys.privateKey,
+    "changeit",
+    { algorithm: "aes256" },
+  );
+  const pemBundle = certPem + encryptedKeyPem;
 
-  return der;
+  return { pkcs12Der, pemBundle };
 }

@@ -83,7 +83,20 @@ cp -f $DRUID_SOLUTION_CONFIG/supervisor/supervisord.conf $DRUID_HOME/conf/superv
 echo " >>druid>> creating keystore and trust store for internal TLS certificates $(date)"
 export RANDFILE=/tmp/.rnd
 export TLS_KEYSTORE_PASSWORD=$(openssl rand -base64 48 | cut -c1-"24")
-bash $DRUID_HOME/scripts/setup_tls_certificates.sh $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME}} "$TLS_KEYSTORE_PASSWORD"
+if [ -r /etc/os-release ]; then
+    . /etc/os-release
+fi
+
+if [ "${ID:-}" = "ubuntu" ] && [ "${VERSION_ID:-}" = "22.04" ] && \
+   [ -r /proc/sys/crypto/fips_enabled ] && grep -qx '1' /proc/sys/crypto/fips_enabled; then
+    echo " >>druid>> using Ubuntu 22.04 FIPS TLS setup script $(date)"
+    bash $DRUID_HOME/scripts/setup_tls_certificates2204fips.sh \
+        $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME_PEM}} "$TLS_KEYSTORE_PASSWORD"
+else
+    echo " >>druid>> using default TLS setup script $(date)"
+    bash $DRUID_HOME/scripts/setup_tls_certificates.sh \
+        $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME}} "$TLS_KEYSTORE_PASSWORD"
+fi
 
 echo " >>druid>> retrieving AWS secrets $(date)"
 RDS_SECRET=$(aws secretsmanager get-secret-value --secret-id {{RDS_SECRET_NAME}} --output text --query SecretString)
