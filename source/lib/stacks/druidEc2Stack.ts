@@ -817,7 +817,7 @@ export class DruidEc2Stack extends DruidStack {
         }),
       });
 
-      loadbalancer.addListener(`listener-https-id-v3`, {
+      loadbalancer.addListener(`listener-https-id`, {
         port: 443,
         certificates: [this.certificate],
         defaultAction: elb.ListenerAction.forward([targetGrp]),
