@@ -4,268 +4,268 @@
 */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { CloudFormationCustomResourceEvent } from 'aws-lambda';
-import axios from 'axios';
-import * as uuid from 'uuid';
-import * as handler from './retentionConfigLambda';
-import { mockClient } from 'aws-sdk-client-mock';
+import { CloudFormationCustomResourceEvent } from "aws-lambda";
+import axios from "axios";
+import * as uuid from "uuid";
+import * as handler from "./retentionConfigLambda";
+import { mockClient } from "aws-sdk-client-mock";
 import {
-    GetSecretValueCommand,
-    SecretsManagerClient,
-} from '@aws-sdk/client-secrets-manager';
+  GetSecretValueCommand,
+  SecretsManagerClient,
+} from "@aws-sdk/client-secrets-manager";
 
-jest.mock('axios');
-jest.mock('uuid');
+jest.mock("axios");
+jest.mock("uuid");
 
 const secretsManagerClientMock = mockClient(SecretsManagerClient);
 
-describe('retention config lambda', () => {
-    const event = {
-        ServiceToken: 'test-service-token',
-        ResponseURL: 'https://test-url',
-        StackId: 'test-stack-id',
-        RequestId: 'test-request-id ',
-        LogicalResourceId: 'test-logical-resource-id',
-        ResourceType: 'AWS::CloudFormation::CustomResource',
-        ResourceProperties: {
-            ServiceToken: 'test-service-token',
-            retentionRules: [
-                {
-                    type: 'loadByPeriod',
-                    period: 'P1M',
-                    includeFuture: true,
-                    tieredReplicants: {
-                        hot: 1,
-                        _default_tier: 1,
-                    },
-                },
-                {
-                    type: 'loadByInterval',
-                    interval: '2012-01-01/2013-01-01',
-                    tieredReplicants: {
-                        hot: 1,
-                        _default_tier: 1,
-                    },
-                },
-                {
-                    type: 'loadForever',
-                    tieredReplicants: {
-                        hot: 1,
-                        _default_tier: 1,
-                    },
-                },
-            ],
+describe("retention config lambda", () => {
+  const event = {
+    ServiceToken: "test-service-token",
+    ResponseURL: "https://test-url",
+    StackId: "test-stack-id",
+    RequestId: "test-request-id ",
+    LogicalResourceId: "test-logical-resource-id",
+    ResourceType: "AWS::CloudFormation::CustomResource",
+    ResourceProperties: {
+      ServiceToken: "test-service-token",
+      retentionRules: [
+        {
+          type: "loadByPeriod",
+          period: "P1M",
+          includeFuture: true,
+          tieredReplicants: {
+            hot: 1,
+            _default_tier: 1,
+          },
         },
+        {
+          type: "loadByInterval",
+          interval: "2012-01-01/2013-01-01",
+          tieredReplicants: {
+            hot: 1,
+            _default_tier: 1,
+          },
+        },
+        {
+          type: "loadForever",
+          tieredReplicants: {
+            hot: 1,
+            _default_tier: 1,
+          },
+        },
+      ],
+    },
+  };
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    secretsManagerClientMock.reset();
+  });
+
+  it("returns a success response when retention rules are successfully created", async () => {
+    const mockUUID = "test-physical-resource-id";
+
+    // Mock the getSystemUserSecret function to return a valid admin user secret
+    jest.spyOn(handler, "getSystemUserSecret").mockResolvedValueOnce(
+      JSON.stringify({
+        username: "admin",
+        password: "password",
+      }),
+    );
+
+    jest.spyOn(uuid, "v4").mockReturnValueOnce(mockUUID);
+
+    // Mock the axios post function to return a 200 status code
+    jest.spyOn(axios, "post").mockResolvedValueOnce({
+      status: 200,
+    });
+
+    const createEvent: CloudFormationCustomResourceEvent = {
+      RequestType: "Create",
+      ...event,
+    };
+    const result = await handler.onEventHandler(createEvent);
+
+    expect(result.Status).toEqual("SUCCESS");
+    expect(result.PhysicalResourceId).toEqual(mockUUID);
+    expect(result.RequestId).toEqual(event.RequestId);
+  });
+
+  it("returns a success response when retention rules are successfully updated", async () => {
+    // Mock the getSystemUserSecret function to return a valid admin user secret
+    jest.spyOn(handler, "getSystemUserSecret").mockResolvedValueOnce(
+      JSON.stringify({
+        username: "admin",
+        password: "password",
+      }),
+    );
+
+    // Mock the axios post function to return a 200 status code
+    jest.spyOn(axios, "post").mockResolvedValueOnce({
+      status: 200,
+    });
+
+    const updateEvent: CloudFormationCustomResourceEvent = {
+      RequestType: "Update",
+      PhysicalResourceId: "test-physical-resource-id",
+      OldResourceProperties: {},
+      ...event,
+    };
+    const result = await handler.onEventHandler(updateEvent);
+
+    expect(result.Status).toEqual("SUCCESS");
+    expect(result.PhysicalResourceId).toEqual("test-physical-resource-id");
+    expect(result.RequestId).toEqual(event.RequestId);
+  });
+
+  it("do nothing when delete event is received", async () => {
+    // Mock the getSystemUserSecret function to return a valid admin user secret
+    const getAdminUserSpy = jest
+      .spyOn(handler, "getSystemUserSecret")
+      .mockResolvedValueOnce(
+        JSON.stringify({
+          username: "admin",
+          password: "password",
+        }),
+      );
+
+    // Mock the axios post function to return a 200 status code
+    const axiosPostSpy = jest.spyOn(axios, "post").mockResolvedValueOnce({
+      status: 200,
+    });
+
+    const deleteEvent: CloudFormationCustomResourceEvent = {
+      RequestType: "Delete",
+      PhysicalResourceId: "test-physical-resource-id",
+      ...event,
+    };
+    const result = await handler.onEventHandler(deleteEvent);
+
+    expect(getAdminUserSpy).not.toBeCalled();
+    expect(axiosPostSpy).not.toBeCalled();
+
+    expect(result.Status).toEqual("SUCCESS");
+    expect(result.PhysicalResourceId).toEqual("test-physical-resource-id");
+    expect(result.RequestId).toEqual(event.RequestId);
+  });
+
+  it("should log error message when getSystemUserSecret fails", async () => {
+    // Mock the getSystemUserSecret function to return undefined
+    jest.spyOn(handler, "getSystemUserSecret").mockResolvedValueOnce(undefined);
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const createEvent: CloudFormationCustomResourceEvent = {
+      RequestType: "Create",
+      ...event,
     };
 
-    beforeEach(() => {
-        jest.resetAllMocks();
-        secretsManagerClientMock.reset();
+    const result = await handler.onEventHandler(createEvent);
+
+    expect(console.error).toBeCalledWith(
+      `Failed to configure retention rules: ${JSON.stringify(
+        event.ResourceProperties.retentionRules,
+      )}`,
+    );
+    expect(result.Status).toEqual("SUCCESS");
+  });
+
+  it("should log error message when retention rules fail to be configured", async () => {
+    // Mock the getSystemUserSecret function to return a valid admin user secret
+    jest.spyOn(handler, "getSystemUserSecret").mockResolvedValueOnce(
+      JSON.stringify({
+        username: "admin",
+        password: "password",
+      }),
+    );
+
+    jest.spyOn(global, "setTimeout");
+
+    // Mock the axios post function to throw an error
+    jest
+      .spyOn(axios, "post")
+      .mockRejectedValueOnce(new Error("Failed to configure retention rules"));
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const createEvent: CloudFormationCustomResourceEvent = {
+      RequestType: "Create",
+      ...event,
+    };
+    const result = await handler.onEventHandler(createEvent);
+
+    expect(console.error).toBeCalledWith(
+      `Failed to configure retention rules: ${JSON.stringify(
+        event.ResourceProperties.retentionRules,
+      )}`,
+    );
+    expect(setTimeout).toHaveBeenCalledTimes(5);
+    expect(result.Status).toEqual("SUCCESS");
+  });
+
+  it("should log error message when coodinator api returns status other than 200", async () => {
+    // Mock the getSystemUserSecret function to return a valid admin user secret
+    jest.spyOn(handler, "getSystemUserSecret").mockResolvedValueOnce(
+      JSON.stringify({
+        username: "admin",
+        password: "password",
+      }),
+    );
+
+    // Mock the axios post function to throw an error
+    jest.spyOn(axios, "post").mockResolvedValueOnce({
+      status: 401,
     });
+    jest.spyOn(console, "error").mockImplementation(() => {});
 
-    it('returns a success response when retention rules are successfully created', async () => {
-        const mockUUID = 'test-physical-resource-id';
+    const createEvent: CloudFormationCustomResourceEvent = {
+      RequestType: "Create",
+      ...event,
+    };
 
-        // Mock the getSystemUserSecret function to return a valid admin user secret
-        jest.spyOn(handler, 'getSystemUserSecret').mockResolvedValueOnce(
-            JSON.stringify({
-                username: 'admin',
-                password: 'password',
-            })
-        );
+    const result = await handler.onEventHandler(createEvent);
 
-        jest.spyOn(uuid, 'v4').mockReturnValueOnce(mockUUID);
+    expect(console.error).toBeCalledWith(
+      `Failed to configure retention rules: ${JSON.stringify(
+        event.ResourceProperties.retentionRules,
+      )}`,
+    );
+    expect(result.Status).toEqual("SUCCESS");
+  });
 
-        // Mock the axios post function to return a 200 status code
-        jest.spyOn(axios, 'post').mockResolvedValueOnce({
-            status: 200,
-        });
+  it("getSystemUserSecret should return the admin user secret", async () => {
+    const secretId = "test-secret-id";
+    const secretValue = {
+      username: "admin",
+      password: "password",
+    };
 
-        const createEvent: CloudFormationCustomResourceEvent = {
-            RequestType: 'Create',
-            ...event,
-        };
-        const result = await handler.onEventHandler(createEvent);
+    process.env.SYSTEM_USER_SECRET_ID = secretId;
 
-        expect(result.Status).toEqual('SUCCESS');
-        expect(result.PhysicalResourceId).toEqual(mockUUID);
-        expect(result.RequestId).toEqual(event.RequestId);
-    });
+    secretsManagerClientMock
+      .on(GetSecretValueCommand, {
+        SecretId: secretId,
+      })
+      .resolves({
+        SecretString: JSON.stringify(secretValue),
+      });
 
-    it('returns a success response when retention rules are successfully updated', async () => {
-        // Mock the getSystemUserSecret function to return a valid admin user secret
-        jest.spyOn(handler, 'getSystemUserSecret').mockResolvedValueOnce(
-            JSON.stringify({
-                username: 'admin',
-                password: 'password',
-            })
-        );
+    const result = await handler.getSystemUserSecret();
 
-        // Mock the axios post function to return a 200 status code
-        jest.spyOn(axios, 'post').mockResolvedValueOnce({
-            status: 200,
-        });
+    expect(result).toEqual(JSON.stringify(secretValue));
+  });
 
-        const updateEvent: CloudFormationCustomResourceEvent = {
-            RequestType: 'Update',
-            PhysicalResourceId: 'test-physical-resource-id',
-            OldResourceProperties: {},
-            ...event,
-        };
-        const result = await handler.onEventHandler(updateEvent);
+  it("getSystemUserSecret should return undefined if there is an error", async () => {
+    const secretId = "test-secret-id";
 
-        expect(result.Status).toEqual('SUCCESS');
-        expect(result.PhysicalResourceId).toEqual('test-physical-resource-id');
-        expect(result.RequestId).toEqual(event.RequestId);
-    });
+    process.env.SYSTEM_USER_SECRET_ID = secretId;
 
-    it('do nothing when delete event is received', async () => {
-        // Mock the getSystemUserSecret function to return a valid admin user secret
-        const getAdminUserSpy = jest
-            .spyOn(handler, 'getSystemUserSecret')
-            .mockResolvedValueOnce(
-                JSON.stringify({
-                    username: 'admin',
-                    password: 'password',
-                })
-            );
+    secretsManagerClientMock
+      .on(GetSecretValueCommand, {
+        SecretId: secretId,
+      })
+      .rejectsOnce();
+    const result = await handler.getSystemUserSecret();
 
-        // Mock the axios post function to return a 200 status code
-        const axiosPostSpy = jest.spyOn(axios, 'post').mockResolvedValueOnce({
-            status: 200,
-        });
-
-        const deleteEvent: CloudFormationCustomResourceEvent = {
-            RequestType: 'Delete',
-            PhysicalResourceId: 'test-physical-resource-id',
-            ...event,
-        };
-        const result = await handler.onEventHandler(deleteEvent);
-
-        expect(getAdminUserSpy).not.toBeCalled();
-        expect(axiosPostSpy).not.toBeCalled();
-
-        expect(result.Status).toEqual('SUCCESS');
-        expect(result.PhysicalResourceId).toEqual('test-physical-resource-id');
-        expect(result.RequestId).toEqual(event.RequestId);
-    });
-
-    it('should log error message when getSystemUserSecret fails', async () => {
-        // Mock the getSystemUserSecret function to return undefined
-        jest.spyOn(handler, 'getSystemUserSecret').mockResolvedValueOnce(undefined);
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-
-        const createEvent: CloudFormationCustomResourceEvent = {
-            RequestType: 'Create',
-            ...event,
-        };
-
-        const result = await handler.onEventHandler(createEvent);
-
-        expect(console.error).toBeCalledWith(
-            `Failed to configure retention rules: ${JSON.stringify(
-                event.ResourceProperties.retentionRules
-            )}`
-        );
-        expect(result.Status).toEqual('SUCCESS');
-    });
-
-    it('should log error message when retention rules fail to be configured', async () => {
-        // Mock the getSystemUserSecret function to return a valid admin user secret
-        jest.spyOn(handler, 'getSystemUserSecret').mockResolvedValueOnce(
-            JSON.stringify({
-                username: 'admin',
-                password: 'password',
-            })
-        );
-
-        jest.spyOn(global, 'setTimeout');
-
-        // Mock the axios post function to throw an error
-        jest.spyOn(axios, 'post').mockRejectedValueOnce(
-            new Error('Failed to configure retention rules')
-        );
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-
-        const createEvent: CloudFormationCustomResourceEvent = {
-            RequestType: 'Create',
-            ...event,
-        };
-        const result = await handler.onEventHandler(createEvent);
-
-        expect(console.error).toBeCalledWith(
-            `Failed to configure retention rules: ${JSON.stringify(
-                event.ResourceProperties.retentionRules
-            )}`
-        );
-        expect(setTimeout).toHaveBeenCalledTimes(5);
-        expect(result.Status).toEqual('SUCCESS');
-    });
-
-    it('should log error message when coodinator api returns status other than 200', async () => {
-        // Mock the getSystemUserSecret function to return a valid admin user secret
-        jest.spyOn(handler, 'getSystemUserSecret').mockResolvedValueOnce(
-            JSON.stringify({
-                username: 'admin',
-                password: 'password',
-            })
-        );
-
-        // Mock the axios post function to throw an error
-        jest.spyOn(axios, 'post').mockResolvedValueOnce({
-            status: 401,
-        });
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-
-        const createEvent: CloudFormationCustomResourceEvent = {
-            RequestType: 'Create',
-            ...event,
-        };
-
-        const result = await handler.onEventHandler(createEvent);
-
-        expect(console.error).toBeCalledWith(
-            `Failed to configure retention rules: ${JSON.stringify(
-                event.ResourceProperties.retentionRules
-            )}`
-        );
-        expect(result.Status).toEqual('SUCCESS');
-    });
-
-    it('getSystemUserSecret should return the admin user secret', async () => {
-        const secretId = 'test-secret-id';
-        const secretValue = {
-            username: 'admin',
-            password: 'password',
-        };
-
-        process.env.SYSTEM_USER_SECRET_ID = secretId;
-
-        secretsManagerClientMock
-            .on(GetSecretValueCommand, {
-                SecretId: secretId,
-            })
-            .resolves({
-                SecretString: JSON.stringify(secretValue),
-            });
-
-        const result = await handler.getSystemUserSecret();
-
-        expect(result).toEqual(JSON.stringify(secretValue));
-    });
-
-    it('getSystemUserSecret should return undefined if there is an error', async () => {
-        const secretId = 'test-secret-id';
-
-        process.env.SYSTEM_USER_SECRET_ID = secretId;
-
-        secretsManagerClientMock
-            .on(GetSecretValueCommand, {
-                SecretId: secretId,
-            })
-            .rejectsOnce();
-        const result = await handler.getSystemUserSecret();
-
-        expect(result).not.toBeDefined();
-    });
+    expect(result).not.toBeDefined();
+  });
 });

@@ -33,11 +33,24 @@
 
         <!-- Following must be updated along with any updates to pac4j version -->
         <nimbus.lang.tag.version>1.7</nimbus.lang.tag.version>
-        <nimbus.jose.jwt.version>9.40</nimbus.jose.jwt.version>
+        <nimbus.jose.jwt.version>10.0.2</nimbus.jose.jwt.version>
         <oauth2.oidc.sdk.version>11.13</oauth2.oidc.sdk.version>
+        <jackson.bom.version>2.17.2</jackson.bom.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
