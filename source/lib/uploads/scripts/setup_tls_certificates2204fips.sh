@@ -18,6 +18,9 @@ TLS_CERT_HOME="$1"
 TLS_CERTIFICATE_SECRET_NAME_PEM="$2"
 TLS_KEYSTORE_PASSWORD="$3"
 
+BCFIPS_JAR='/opt/service/dependencies/bc-fips-2.1.2.jar'
+BCFIPS_CLASS='org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider'
+
 mkdir -p "$TLS_CERT_HOME"
 cd "$TLS_CERT_HOME" || exit 1
 
@@ -26,16 +29,16 @@ aws secretsmanager get-secret-value --secret-id "$TLS_CERTIFICATE_SECRET_NAME_PE
 openssl pkey -in ca.crt.enc -out ca.key -passin pass:changeit
 openssl x509 -in ca.crt.enc -out ca.cert.pem
 
-keytool -genkeypair -alias druid -keyalg RSA -keysize 2048 -keystore keystore.jks -storetype JKS -storepass "$TLS_KEYSTORE_PASSWORD" -keypass "$TLS_KEYSTORE_PASSWORD" -dname "CN=$HOSTNAME" -validity 365 -noprompt
-keytool -certreq -alias druid -keystore keystore.jks -storepass "$TLS_KEYSTORE_PASSWORD" -file druid.csr
+keytool -genkeypair -alias druid -keyalg RSA -keysize 2048 -keystore keystore.bcfks -storetype BCFKS -storepass "$TLS_KEYSTORE_PASSWORD" -keypass "$TLS_KEYSTORE_PASSWORD" -dname "CN=$HOSTNAME" -validity 365 -providerclass "$BCFIPS_CLASS" -providerpath "$BCFIPS_JAR" -noprompt
+keytool -certreq -alias druid -keystore keystore.bcfks -storepass "$TLS_KEYSTORE_PASSWORD" -file druid.csr -providerclass "$BCFIPS_CLASS" -providerpath "$BCFIPS_JAR"
 
 openssl x509 -req -in druid.csr -CA ca.cert.pem -CAkey ca.key -CAcreateserial -out druid.pem -days 365 -sha256
 cat druid.pem ca.cert.pem > druid-chain.pem
 
-keytool -importcert -file ca.cert.pem -alias druid-ca -keystore keystore.jks -storepass "$TLS_KEYSTORE_PASSWORD" -noprompt
-keytool -importcert -file druid-chain.pem -alias druid -keystore keystore.jks -storepass "$TLS_KEYSTORE_PASSWORD" -noprompt
+keytool -importcert -file ca.cert.pem -alias druid-ca -keystore keystore.bcfks -storepass "$TLS_KEYSTORE_PASSWORD" -providerclass "$BCFIPS_CLASS" -providerpath "$BCFIPS_JAR" -noprompt
+keytool -importcert -file druid-chain.pem -alias druid -keystore keystore.bcfks -storepass "$TLS_KEYSTORE_PASSWORD" -providerclass "$BCFIPS_CLASS" -providerpath "$BCFIPS_JAR" -noprompt
 
-keytool -importcert -file ca.cert.pem -alias druid-ca -keystore truststore.jks -deststorepass "$TLS_KEYSTORE_PASSWORD" -noprompt
+keytool -importcert -trustcacerts -file ca.cert.pem -alias druid-ca -keystore truststore.bcfks -storetype BCFKS -storepass "$TLS_KEYSTORE_PASSWORD" -providerclass "$BCFIPS_CLASS" -providerpath "$BCFIPS_JAR" -noprompt
 
 rm -f druid.csr druid.pem druid-chain.pem ca.crt.enc ca.cert.pem ca.key ./*.srl
 
