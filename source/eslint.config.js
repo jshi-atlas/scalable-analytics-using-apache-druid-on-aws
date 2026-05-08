@@ -104,4 +104,27 @@ module.exports = [
             ],
         },
     },
+    {
+        // The FedRAMP build pipeline disables certain CDK constructs by
+        // prepending `false &&` to method/constructor calls via `sed`. That
+        // transformation produces patterns like `false && new Foo(...)` which
+        // are flagged as unused / constant expressions by these rules. The
+        // pattern is intentional in stack/entrypoint files; relax the rules
+        // there only.
+        files: ['lib/stacks/**/*.ts', 'bin/**/*.ts'],
+        rules: {
+            '@typescript-eslint/no-unused-expressions': 'off',
+            'no-constant-binary-expression': 'off',
+            '@typescript-eslint/no-unnecessary-condition': 'off',
+        },
+    },
+    {
+        // Files with a `#!/usr/bin/env node` shebang cannot have the license
+        // header on line 1; eslint-plugin-license-header has no shebang
+        // support, so disable the rule for those entrypoints.
+        files: ['bin/**/*.ts'],
+        rules: {
+            'license-header/header': 'off',
+        },
+    },
 ];
