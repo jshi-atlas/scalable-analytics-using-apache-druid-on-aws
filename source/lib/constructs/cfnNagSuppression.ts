@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Construct } from "constructs";
 import { IAspect, CfnResource } from "aws-cdk-lib";

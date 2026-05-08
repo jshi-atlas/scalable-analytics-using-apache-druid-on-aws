@@ -42,7 +42,7 @@ export class ZooKeeper extends Construct {
       props.baseInfra.installationBucket,
       props.clusterParams.druidInstanceIamPolicyArns,
     );
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     const zookeeperInstanceConfig = (
       props.clusterParams.hostingConfig as Ec2Config
     )[DruidNodeType.ZOOKEEPER]!;
@@ -110,13 +110,12 @@ export class ZooKeeper extends Construct {
       const zookeeperServers: string[] = new Array(zookeeperCount)
         .fill(null)
         .map(
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           (_, idx) => `server.${idx + 1}=${zookeeperPrivateIps[idx]}:2888:3888`,
         );
 
       const formattedZooKeeperServers: string[] = new Array(zookeeperCount)
         .fill(null)
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+
         .map((_, idx) => `${zookeeperPrivateIps[idx]}:2181`);
       this.zookeeperConnectionString = formattedZooKeeperServers.join(",");
 

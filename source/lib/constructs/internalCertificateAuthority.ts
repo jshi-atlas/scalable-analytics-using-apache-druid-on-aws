@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as cdk from "aws-cdk-lib";
@@ -47,14 +48,10 @@ export class InternalCertificateAuthority extends Construct {
       {
         description:
           "TLS CA certificate in PEM format for Ubuntu 22.04 FIPS nodes",
-        encryptionKey: new kms.Key(
-          this,
-          "tls-certificate-pem-encryption-key",
-          {
-            enableKeyRotation: true,
-            removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
-          },
-        ),
+        encryptionKey: new kms.Key(this, "tls-certificate-pem-encryption-key", {
+          enableKeyRotation: true,
+          removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+        }),
         removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
       },
     );

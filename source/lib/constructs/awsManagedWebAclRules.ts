@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 export const rules = [
   // AWS IP Reputation list includes known malicious actors/bots and is regularly updated
   {

@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 import * as cdk from "aws-cdk-lib";
 import * as constants from "../utils/constants";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
@@ -661,7 +662,6 @@ export class DruidEks extends DruidEksBase {
             minSize: minSizePerAz,
             maxSize: nodeGroupConfig[nodeType].maxNodes
               ? Math.round(
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   nodeGroupConfig[nodeType].maxNodes! / availabilityZoneCnt,
                 )
               : undefined,

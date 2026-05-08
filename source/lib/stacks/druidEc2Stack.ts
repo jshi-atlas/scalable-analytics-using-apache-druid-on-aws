@@ -2,7 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import * as autoscaling from "aws-cdk-lib/aws-autoscaling";
 import * as cdk from "aws-cdk-lib";
 import * as cw from "aws-cdk-lib/aws-cloudwatch";
@@ -850,7 +850,6 @@ export class DruidEc2Stack extends DruidStack {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         "SecurityGroup/Resource": [
           {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             id: "SECURITY_GROUP_MISSING_EGRESS_RULE",
             reason: "Allows outbound traffic to anywhere for ALB",
           },

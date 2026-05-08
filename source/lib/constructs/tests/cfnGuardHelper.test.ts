@@ -27,7 +27,6 @@ test("add multiple suppressions", () => {
   Template.fromStack(stack).hasResource("AWS::S3::Bucket", {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Metadata: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       guard: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         SuppressedRules: [

@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { CloudFormationCustomResourceEvent } from "aws-lambda";
@@ -109,7 +110,7 @@ describe("retention config lambda", () => {
     const updateEvent: CloudFormationCustomResourceEvent = {
       RequestType: "Update",
       PhysicalResourceId: "test-physical-resource-id",
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: "ServiceToken" },
       ...event,
     };
     const result = await handler.onEventHandler(updateEvent);

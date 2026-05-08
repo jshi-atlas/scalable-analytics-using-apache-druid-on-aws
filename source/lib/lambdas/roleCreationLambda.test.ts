@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as utils from "./retentionConfigLambda";
@@ -94,7 +95,7 @@ describe("onEventHandler", () => {
       ...event,
       RequestType: "Update",
       PhysicalResourceId: "",
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: "ServiceToken" },
     });
 
     // assert

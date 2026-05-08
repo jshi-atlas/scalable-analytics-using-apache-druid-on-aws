@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 import * as cronParser from "cron-parser";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as eks from "aws-cdk-lib/aws-eks";
@@ -164,7 +165,7 @@ export function validateCronExpression(cronExpression: string): boolean {
   try {
     cronParser.parseExpression(cronExpression);
     return true;
-  } catch (err) {
+  } catch (_err) {
     return false;
   }
 }

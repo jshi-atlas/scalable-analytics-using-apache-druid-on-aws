@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
   CloudFormationCustomResourceEvent,
@@ -116,7 +117,6 @@ export async function generateAxiosConfig(): Promise<
 export async function configureRetentionRules(
   retentionRules: RetentionRule[],
 ): Promise<ResponseType> {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const druidEndpoint = process.env["DRUID_ENDPOINT"]!;
   const maxRetries = process.env["NUM_OF_ATTEMPTS"]
     ? parseInt(process.env["NUM_OF_ATTEMPTS"])

@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as actions from "aws-cdk-lib/aws-cloudwatch-actions";
 import * as cw from "aws-cdk-lib/aws-cloudwatch";

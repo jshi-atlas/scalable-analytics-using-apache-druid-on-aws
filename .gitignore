@@ -26,6 +26,7 @@ py_modules/
 *.js
 !jest.config.js
 !jest.setup.js
+!eslint.config.js
 *.d.ts
 
 # CDK asset staging directory

@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
@@ -402,7 +403,6 @@ export abstract class DruidEksBase extends Construct {
       values: {
         replicaCount: 3,
         env: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           DENY_LIST: "kube-system",
         },
       },

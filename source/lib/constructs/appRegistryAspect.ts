@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 import * as appInsights from "aws-cdk-lib/aws-applicationinsights";
 import * as appRegistry from "@aws-cdk/aws-servicecatalogappregistry-alpha";
 import * as cdk from "aws-cdk-lib";

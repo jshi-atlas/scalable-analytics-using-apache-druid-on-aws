@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 import * as as from "aws-cdk-lib/aws-autoscaling";
 import * as cdk from "aws-cdk-lib";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
@@ -78,7 +79,7 @@ export class DruidAutoScalingGroup extends Construct {
     );
 
     // The null check has been done by the caller (ie. druidEc2Stack) to ensure that the nodeType is present in the config
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
     const instanceConfig = ec2Config[nodeTierName]!;
 
     this.gracefulTerminationParam = new ssm.StringParameter(

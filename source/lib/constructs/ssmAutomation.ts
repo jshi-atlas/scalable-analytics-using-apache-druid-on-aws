@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Construct } from "constructs";
@@ -246,10 +247,9 @@ export class SSMAutomation extends Construct {
       state: "ENABLED",
       eventPattern: {
         source: ["aws.autoscaling"],
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+
         "detail-type": ["EC2 Instance-terminate Lifecycle Action"],
         detail: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           AutoScalingGroupName: [targetAutoScalingGroupName],
         },
       },

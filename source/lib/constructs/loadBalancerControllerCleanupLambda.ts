@@ -2,6 +2,7 @@
  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  SPDX-License-Identifier: Apache-2.0
 */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as elbv2 from "@aws-sdk/client-elastic-load-balancing-v2";
 import * as r53 from "@aws-sdk/client-route-53";
@@ -73,7 +74,7 @@ async function cleanUp(
           new elbv2.DescribeTagsCommand({
             ResourceArns: c
               .filter((x) => x.LoadBalancerArn)
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
               .map((x) => x.LoadBalancerArn!),
           }),
         );
