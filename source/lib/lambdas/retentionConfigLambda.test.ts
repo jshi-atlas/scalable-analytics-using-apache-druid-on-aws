@@ -7,7 +7,7 @@
 
 import { CloudFormationCustomResourceEvent } from "aws-lambda";
 import axios from "axios";
-import * as uuid from "uuid";
+import * as crypto from "node:crypto";
 import * as handler from "./retentionConfigLambda";
 import { mockClient } from "aws-sdk-client-mock";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@aws-sdk/client-secrets-manager";
 
 jest.mock("axios");
-jest.mock("uuid");
 
 const secretsManagerClientMock = mockClient(SecretsManagerClient);
 
@@ -65,7 +64,7 @@ describe("retention config lambda", () => {
   });
 
   it("returns a success response when retention rules are successfully created", async () => {
-    const mockUUID = "test-physical-resource-id";
+    const mockUUID = "00000000-0000-4000-8000-000000000000";
 
     // Mock the getSystemUserSecret function to return a valid admin user secret
     jest.spyOn(handler, "getSystemUserSecret").mockResolvedValueOnce(
@@ -75,7 +74,7 @@ describe("retention config lambda", () => {
       }),
     );
 
-    jest.spyOn(uuid, "v4").mockReturnValueOnce(mockUUID);
+    jest.spyOn(crypto, "randomUUID").mockReturnValueOnce(mockUUID);
 
     // Mock the axios post function to return a 200 status code
     jest.spyOn(axios, "post").mockResolvedValueOnce({

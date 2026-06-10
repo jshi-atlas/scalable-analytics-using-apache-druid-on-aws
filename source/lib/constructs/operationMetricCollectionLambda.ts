@@ -12,7 +12,7 @@ import {
 } from "aws-lambda";
 import axios, { AxiosRequestConfig } from "axios";
 
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 const METRICS_ENDPOINT = "https://metrics.awssolutionsbuilder.com/generic";
 
@@ -35,7 +35,7 @@ export async function handler(
   switch (event.RequestType) {
     case "Create":
       // only create anonymous uuid for create event
-      anonymousDataUUID = uuidv4();
+      anonymousDataUUID = randomUUID();
       break;
 
     case "Update":

@@ -18,7 +18,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { RetentionRule } from "../utils/types";
 import * as handler from "./retentionConfigLambda";
 
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { SDK_CLIENT_CONFIG } from "../utils/constants";
 
 enum ResponseType {
@@ -43,7 +43,7 @@ export async function onEventHandler(
 
   switch (event.RequestType) {
     case "Create":
-      physicalResourceId = uuidv4();
+      physicalResourceId = randomUUID();
       result = await configureRetentionRules(retentionRules);
       break;
 

@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as elbv2 from "@aws-sdk/client-elastic-load-balancing-v2";
 import * as r53 from "@aws-sdk/client-route-53";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 
 import {
   CloudFormationCustomResourceEvent,
@@ -33,7 +33,7 @@ export async function handler(
   }
   switch (event.RequestType) {
     case "Create":
-      return success(uuidv4());
+      return success(randomUUID());
     case "Update":
       return success(event.PhysicalResourceId);
     case "Delete":
