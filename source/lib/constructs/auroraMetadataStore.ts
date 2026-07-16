@@ -120,6 +120,13 @@ export class AuroraMetadataStore extends MetadataStore {
                   credentials: rds.Credentials.fromSecret(this.dbMasterUserSecret),
               });
 
+        if (metadataStoreConfig?.rdsParameterGroupName) {
+            // Aurora major version upgrades require the new DB instance
+            // parameter group name to be present on the cluster update request.
+            (cluster.node.defaultChild as rds.CfnDBCluster).dbInstanceParameterGroupName =
+                metadataStoreConfig.rdsParameterGroupName;
+        }
+
         cluster.connections.allowFrom(
             props.trafficSourceSecGrp,
             ec2.Port.tcp(cluster.clusterEndpoint.port)
