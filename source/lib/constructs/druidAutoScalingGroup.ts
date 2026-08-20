@@ -51,7 +51,7 @@ export interface DruidAutoScalingGroupContext {
   readonly customAmi?: CustomAmi;
   readonly solutionVersion: string;
   readonly tlsCertificateSecretName: string;
-  readonly tlsCertificateSecretNamePem: string;
+  readonly tlsIntermediateCertificateSecretName?: string;
 }
 
 export interface CustomLifecycleHookParams {
@@ -201,8 +201,10 @@ export class DruidAutoScalingGroup extends Construct {
       /* eslint-disable @typescript-eslint/naming-convention */
       COMMON_USER_DATA: commonUserData,
       TLS_CERTIFICATE_SECRET_NAME: props.asgContext.tlsCertificateSecretName,
-      TLS_CERTIFICATE_SECRET_NAME_PEM:
-        props.asgContext.tlsCertificateSecretNamePem,
+      TLS_INTERMEDIATE_CERTIFICATE_SECRET_NAME: utils.ifUndefined(
+        props.asgContext.tlsIntermediateCertificateSecretName,
+        "",
+      ),
       SOLUTION_VERSION: asgContext.solutionVersion,
       S3_INSTALLATION_BUCKET:
         asgContext.baseInfra.installationBucket.bucketName,

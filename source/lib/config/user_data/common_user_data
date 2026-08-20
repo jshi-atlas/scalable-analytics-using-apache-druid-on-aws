@@ -96,9 +96,13 @@ fi
 
 if [ "${ID:-}" = "ubuntu" ] && [ "${VERSION_ID:-}" = "22.04" ] && \
    [ -r /proc/sys/crypto/fips_enabled ] && grep -qx '1' /proc/sys/crypto/fips_enabled; then
+    if [ -z "{{TLS_INTERMEDIATE_CERTIFICATE_SECRET_NAME}}" ]; then
+        echo " >>druid>> Ubuntu 22.04 FIPS TLS bootstrap requires custom_secret $(date)"
+        exit 1
+    fi
     echo " >>druid>> using Ubuntu 22.04 FIPS TLS setup script $(date)"
     bash $DRUID_HOME/scripts/setup_tls_certificates2204fips.sh \
-        $DRUID_HOME/tls-certificates {{TLS_CERTIFICATE_SECRET_NAME_PEM}} "$TLS_KEYSTORE_PASSWORD"
+        $DRUID_HOME/tls-certificates {{TLS_INTERMEDIATE_CERTIFICATE_SECRET_NAME}} "$TLS_KEYSTORE_PASSWORD"
 else
     echo " >>druid>> using default TLS setup script $(date)"
     bash $DRUID_HOME/scripts/setup_tls_certificates.sh \

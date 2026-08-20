@@ -22,7 +22,6 @@ export interface InternalCertificateAuthorityProps {
 
 export class InternalCertificateAuthority extends Construct {
   public readonly TlsCertificate: secretsmanager.ISecret;
-  public readonly TlsCertificatePem: secretsmanager.ISecret;
 
   public constructor(
     scope: Construct,
@@ -31,30 +30,14 @@ export class InternalCertificateAuthority extends Construct {
   ) {
     super(scope, id);
 
-    // Existing PKCS#12 secret — unchanged
     this.TlsCertificate = new secretsmanager.Secret(this, "tls-certificate", {
-      description: "TLS certificates for druid internal components (PKCS#12)",
+      description: "TLS certificates for druid internal components",
       encryptionKey: new kms.Key(this, "tls-certificate-encryption-key", {
         enableKeyRotation: true,
         removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
       }),
       removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
     });
-
-    // NEW: PEM-format secret for Ubuntu 22.04 FIPS nodes
-    this.TlsCertificatePem = new secretsmanager.Secret(
-      this,
-      "tls-certificate-pem",
-      {
-        description:
-          "TLS CA certificate in PEM format for Ubuntu 22.04 FIPS nodes",
-        encryptionKey: new kms.Key(this, "tls-certificate-pem-encryption-key", {
-          enableKeyRotation: true,
-          removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
-        }),
-        removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
-      },
-    );
 
     const handler = new lambdaNodejs.NodejsFunction(
       this,
@@ -73,7 +56,6 @@ export class InternalCertificateAuthority extends Construct {
     );
 
     this.TlsCertificate.grantWrite(handler);
-    this.TlsCertificatePem.grantWrite(handler); // NEW
 
     const provider = new cr.Provider(this, "provider", {
       onEventHandler: handler,
@@ -83,10 +65,7 @@ export class InternalCertificateAuthority extends Construct {
     // prettier-ignore
     new cdk.CustomResource(this, 'tls-generator-custom-resource', { // NOSONAR (typescript:S1848) - cdk construct is used
             serviceToken: provider.serviceToken,
-            properties: {
-                TLSSecretId: this.TlsCertificate.secretArn,
-                TLSSecretIdPem: this.TlsCertificatePem.secretArn, // NEW
-            },
+            properties: { TLSSecretId: this.TlsCertificate.secretArn },
         });
   }
 }

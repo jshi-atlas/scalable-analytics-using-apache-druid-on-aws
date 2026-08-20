@@ -57,6 +57,7 @@ export interface DruidConfig {
   readonly route53HostedZoneName?: string;
   readonly druidDomain?: string;
   readonly tlsCertificateArn?: string;
+  readonly customSecret?: string;
 
   readonly internetFacing?: boolean;
   readonly useFipsEndpoint?: boolean;
@@ -125,6 +126,7 @@ export interface DruidClusterParameters {
   readonly druidEmitterConfig?: DruidEmitterConfig;
   readonly internetFacing?: boolean;
   readonly enableFipsEndpoints: boolean;
+  readonly customSecret?: string;
   readonly druidRetentionRules?: RetentionRule[];
   readonly druidConcurrentQueryLimit: number;
   readonly druidInstanceIamPolicyArns?: string[];

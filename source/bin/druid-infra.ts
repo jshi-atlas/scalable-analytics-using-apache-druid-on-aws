@@ -46,7 +46,7 @@ const account =
 const region =
   app.node.tryGetContext("region") || process.env["CDK_DEFAULT_REGION"];
 
-const contextKeys: (keyof DruidConfig)[] = [
+const contextKeys: (keyof DruidConfig | "custom_secret")[] = [
   "vpcCidr",
   "vpcId",
   "customAmi",
@@ -55,6 +55,7 @@ const contextKeys: (keyof DruidConfig)[] = [
   "route53HostedZoneName",
   "druidDomain",
   "tlsCertificateArn",
+  "custom_secret",
   "internetFacing",
   "useFipsEndpoint",
   "bastionHost",
@@ -95,6 +96,7 @@ if (!validate(configMap)) {
 }
 
 const druidConfig = Object.assign({}, configMap) as unknown as DruidConfig;
+const customSecret = configMap["custom_secret"] as string | undefined;
 
 const oidcIdpConfig = druidConfig.oidcIdpConfig;
 if (oidcIdpConfig) {
@@ -205,6 +207,7 @@ const commonDruidClusterParams = {
   },
   internetFacing: druidConfig.internetFacing ?? true,
   enableFipsEndpoints: druidConfig.useFipsEndpoint ?? false,
+  customSecret,
   druidRetentionRules: druidConfig.druidRetentionRules,
   druidConcurrentQueryLimit:
     druidConfig.druidConcurrentQueryLimit ?? DEFAULT_NUM_HTTP_CONNECTIONS,
