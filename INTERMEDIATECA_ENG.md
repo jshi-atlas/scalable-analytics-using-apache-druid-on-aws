@@ -36,7 +36,7 @@ The bootstrap script uses these files to:
 - create `truststore.jks`,
 - avoid using `ca.p12`, `openssl pkcs12`, or the root private key on Ubuntu 22.04.
 
-`custom_secret` can be either the Secrets Manager secret name or the complete secret ARN. It is required for Ubuntu 22.04 FIPS nodes.
+`custom_secret` is the Secrets Manager secret name. It is required for Ubuntu 22.04 FIPS nodes.
 
 ## Assumptions
 
@@ -213,7 +213,25 @@ aws secretsmanager describe-secret \
   --secret-id "druid/tls/cluster1/stage/intermediate-ca"
 ```
 
-Use the returned secret name or ARN as `custom_secret` in the deployment configuration.
+Use the returned secret name as `custom_secret` in the deployment configuration.
+
+## Configure `custom_secret` in `cdk.json`
+
+Set `custom_secret` in `cdk.json` to the AWS Secrets Manager secret name that contains the intermediate CA bundle.
+
+For example:
+
+```json
+{
+  "context": {
+    "custom_secret": "druid/tls/cluster1/stage/intermediate-ca"
+  }
+}
+```
+
+Use the exact key name `custom_secret` in `cdk.json`. The CDK code maps this value to `customSecret` internally.
+
+`custom_secret` is required for Ubuntu 22.04 FIPS EC2 deployments. During instance bootstrap, it is rendered into user data as `TLS_INTERMEDIATE_CERTIFICATE_SECRET_NAME` and passed to `setup_tls_certificates2204fips.sh`.
 
 ## Optional validation
 
