@@ -64,7 +64,7 @@ export const DRUID_DEFAULT_VERSION = "30.0.0";
 export const DEFAULT_POSTGRES_PORT = 5432;
 
 export const DEFAULT_POSTGRES_VERSION =
-  rds.AuroraPostgresEngineVersion.VER_14_9;
+  rds.AuroraPostgresEngineVersion.VER_14_17;
 
 export const DEFAULT_NUM_HTTP_CONNECTIONS = 100;
 
