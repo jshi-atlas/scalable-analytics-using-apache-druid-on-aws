@@ -53,7 +53,7 @@ export const configScheme = {
       $id: "#/properties/tlsCertificateArn",
       description: "TLS Certificate ARN.",
     },
-    "custom_secret": {
+    custom_secret: {
       type: "string",
       minLength: 1,
       title: "Custom TLS Intermediate Secret",
