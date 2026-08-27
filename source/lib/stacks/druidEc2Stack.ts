@@ -838,14 +838,18 @@ export class DruidEc2Stack extends DruidStack {
         }),
       });
 
-      loadbalancer.addListener(`listener-https-id`, {
-        port: 443,
-        certificates: [this.certificate],
-        defaultAction: elb.ListenerAction.forward([targetGrp]),
-        sslPolicy: this.props.clusterParams.enableFipsEndpoints
-          ? elb.SslPolicy.FIPS_TLS13_12 // FIPS-compliant policy required for FedRAMP compliance (ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04)
-          : elb.SslPolicy.RECOMMENDED_TLS,
-      });
+      loadbalancer.addListener(
+        this.props.clusterParams.httpsListenerConstructId ??
+          "listener-https-id",
+        {
+          port: 443,
+          certificates: [this.certificate],
+          defaultAction: elb.ListenerAction.forward([targetGrp]),
+          sslPolicy: this.props.clusterParams.enableFipsEndpoints
+            ? elb.SslPolicy.FIPS_TLS13_12 // FIPS-compliant policy required for FedRAMP compliance (ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04)
+            : elb.SslPolicy.RECOMMENDED_TLS,
+        },
+      );
     } else {
       loadbalancer.addListener(`listener-http-id`, {
         port: 80,

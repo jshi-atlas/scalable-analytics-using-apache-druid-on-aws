@@ -58,6 +58,7 @@ export interface DruidConfig {
   readonly druidDomain?: string;
   readonly tlsCertificateArn?: string;
   readonly customSecret?: string;
+  readonly httpsListenerConstructId?: string;
 
   readonly internetFacing?: boolean;
   readonly useFipsEndpoint?: boolean;
@@ -127,6 +128,7 @@ export interface DruidClusterParameters {
   readonly internetFacing?: boolean;
   readonly enableFipsEndpoints: boolean;
   readonly customSecret?: string;
+  readonly httpsListenerConstructId?: string;
   readonly druidRetentionRules?: RetentionRule[];
   readonly druidConcurrentQueryLimit: number;
   readonly druidInstanceIamPolicyArns?: string[];

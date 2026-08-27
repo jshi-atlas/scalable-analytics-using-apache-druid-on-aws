@@ -35,6 +35,14 @@ export const configScheme = {
       description: "The domain name to reach Druid cluster.",
       examples: ["druid-test.com"],
     },
+    httpsListenerConstructId: {
+      type: "string",
+      enum: ["listener-https-id", "listener-https-id-v3"],
+      title: "HTTPS listener construct ID",
+      $id: "#/properties/httpsListenerConstructId",
+      description:
+        "CDK construct ID for the HTTPS listener, used to preserve existing logical IDs.",
+    },
     route53HostedZoneId: {
       type: "string",
       minLength: 1,

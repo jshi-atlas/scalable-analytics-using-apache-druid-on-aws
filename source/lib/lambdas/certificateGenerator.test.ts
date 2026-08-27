@@ -75,7 +75,7 @@ describe("onEventHandler", () => {
       ...event,
       RequestType: "Update",
       PhysicalResourceId: "some-physical-id",
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: "1234" },
     };
 
     // act

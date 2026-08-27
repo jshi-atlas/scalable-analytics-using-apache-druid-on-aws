@@ -5,10 +5,13 @@
     "module": "commonjs",
     "lib": [
       "es2018",
-      "dom"
+      "dom",
+      "esnext.disposable"
     ],
     "declaration": true,
     "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
