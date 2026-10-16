@@ -47,6 +47,7 @@ export interface BaseInfrastructureProps {
   readonly initBastion?: boolean;
   readonly initInstallationBucket?: boolean;
   readonly selfManageInstallationBucketAssets?: boolean;
+  readonly autoDeleteObjects?: boolean;
   readonly druidClusterName: string;
   readonly druidDeepStorageConfig?: DruidDeepStorageConfig;
   readonly oidcIdpConfig?: OidcIdpConfig;
@@ -78,6 +79,7 @@ export class BaseInfrastructure extends Construct {
       versioned: true,
       enforceSSL: true,
       removalPolicy: props.removalPolicy,
+      autoDeleteObjects: props.autoDeleteObjects ?? false,
     };
 
     this.serverAccessLogsBucket = new s3.Bucket(

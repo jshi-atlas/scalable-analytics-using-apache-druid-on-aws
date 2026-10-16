@@ -281,6 +281,13 @@ export const configScheme = {
             $id: '#/properties/selfManageInstallationBucketAssets',
             description: 'Whether to enable self management for installation bucket assets.',
         },
+        autoDeleteObjects: {
+            type: 'boolean',
+            title: 'Automatically delete bucket objects',
+            $id: '#/properties/autoDeleteObjects',
+            description:
+                'Whether to delete objects from solution-owned buckets when the stack is deleted.',
+        },
         environmentAgnostic: {
             type: 'boolean',
             title: 'Environment Agnostic',

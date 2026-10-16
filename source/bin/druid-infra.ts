@@ -85,6 +85,7 @@ const contextKeys: (keyof DruidConfig)[] = [
     'tags',
     'additionalTags',
     'selfManageInstallationBucketAssets',
+    'autoDeleteObjects',
 ];
 
 const configMap: Record<string, unknown> = {};
@@ -173,6 +174,7 @@ const commonStackProps = {
     subnetMappings: druidConfig.subnetMappings,
     enableVulnerabilityScanJob: druidConfig.enableVulnerabilityScanJob ?? false,
     selfManageInstallationBucketAssets: druidConfig.selfManageInstallationBucketAssets ?? false,
+    autoDeleteObjects: druidConfig.autoDeleteObjects ?? false,
     ...(!druidConfig.environmentAgnostic && { env: { account, region } }),
 };
 
