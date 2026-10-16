@@ -47,6 +47,7 @@ export abstract class DruidStack extends cdk.Stack {
             initBastion: props.initBastion,
             initInstallationBucket: props.initInstallationBucket,
             selfManageInstallationBucketAssets: props.selfManageInstallationBucketAssets,
+            autoDeleteObjects: props.autoDeleteObjects,
             druidClusterName: props.clusterParams.druidClusterName,
             druidDeepStorageConfig: props.clusterParams.druidDeepStorageConfig,
             oidcIdpConfig: props.clusterParams.oidcIdpConfig,

@@ -72,6 +72,7 @@ export interface DruidConfig {
     readonly enableVulnerabilityScanJob?: boolean;
     readonly environmentAgnostic?: boolean;
     readonly selfManageInstallationBucketAssets?: boolean;
+    readonly autoDeleteObjects?: boolean;
 
     readonly druidClusterName: string;
     readonly druidVersion: string;
@@ -101,6 +102,7 @@ export interface DruidStackProps extends cdk.StackProps {
     readonly initBastion?: boolean;
     readonly initInstallationBucket?: boolean;
     readonly selfManageInstallationBucketAssets?: boolean;
+    readonly autoDeleteObjects?: boolean;
     readonly route53Params?: {
         readonly route53HostedZoneId: string;
         readonly route53HostedZoneName: string;
