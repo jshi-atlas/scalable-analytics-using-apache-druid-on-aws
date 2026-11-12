@@ -624,12 +624,12 @@ export const configScheme = {
                         minNodes: {
                             type: 'integer',
                             title: 'Minimum Nodes',
-                            minimum: 1,
+                            minimum: 0,
                         },
                         maxNodes: {
                             type: 'integer',
                             title: 'Maximum Nodes',
-                            minimum: 1,
+                            minimum: 0,
                         },
                         instanceType: {
                             type: 'string',
